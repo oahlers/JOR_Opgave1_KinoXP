@@ -1,21 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>KinoXP</title>
-  <link rel="stylesheet" href="../css/styles.css">
+  <title>Movies</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<h1>Welcome to KinoXP</h1>
-<nav>
-  <ul>
-    <li><a href="movies.html">Movies</a></li>
-    <li><a href="shows.html">Shows</a></li>
-    <li><a href="bookings.html">Bookings</a></li>
-    <li><a href="staff.html">Staff</a></li>
-    <li><a href="roster.html">Roster</a></li>
-    <li><a href="sweets.html">Sweets</a></li>
-  </ul>
-</nav>
+<header>
+  <h1>KinoXP Kalender</h1>
+  <nav>
+    <a href="/">Hjem</a>
+    <a href="/movies">Film</a>
+    <a href="/shows">Forestilling</a>
+  </nav>
+</header>
+
+<main>
+  <div id="movies-list"></div>
+
+  <!-- Modal for movie info + booking -->
+  <div id="movie-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <button id="close-modal" class="modal-close">&times;</button>
+      <h2 id="modal-title"></h2>
+      <p><strong>Kategori:</strong> <span id="modal-category"></span></p>
+      <p><strong>Aldersgrænse:</strong> <span id="modal-age"></span></p>
+      <p><strong>Varighed:</strong> <span id="modal-duration"></span> min</p>
+      <p><strong>Skuespillere:</strong> <span id="modal-actors"></span></p>
+
+      <h3>Book pladser</h3>
+      <form id="booking-form">
+        <label for="booking-date">Dato:</label>
+        <input type="date" id="booking-date" required>
+
+        <label for="num-seats">Antal pladser:</label>
+        <input type="number" id="num-seats" min="1" max="10" value="1" required>
+
+        <button type="submit">Book</button>
+      </form>
+
+      <div id="booking-message" style="margin-top:10px;color:#e50914;"></div>
+    </div>
+  </div>
+</main>
+
+<script src="js/movies.js"></script>
 </body>
 </html>
