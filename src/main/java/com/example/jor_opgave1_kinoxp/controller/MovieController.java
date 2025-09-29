@@ -1,10 +1,8 @@
 package com.example.jor_opgave1_kinoxp.controller;
 
 import com.example.jor_opgave1_kinoxp.model.Movie;
-import com.example.jor_opgave1_kinoxp.repository.MovieRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.jor_opgave1_kinoxp.service.MovieService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -12,14 +10,34 @@ import java.util.List;
 @RequestMapping("/api/movies")
 public class MovieController {
 
-    private final MovieRepository movieRepository;
+    private final MovieService movieService;
 
-    public MovieController(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
     }
 
     @GetMapping
     public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+        return movieService.getAllMovies();
+    }
+
+    @GetMapping("/{id}")
+    public Movie getMovie(@PathVariable Long id) {
+        return movieService.getMovieById(id);
+    }
+
+    @PostMapping
+    public Movie createMovie(@RequestBody Movie movie) {
+        return movieService.createMovie(movie);
+    }
+
+    @PutMapping("/{id}")
+    public Movie updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
+        return movieService.updateMovie(id, movie);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
     }
 }

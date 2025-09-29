@@ -3,6 +3,7 @@ package com.example.jor_opgave1_kinoxp.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "theaters")
 public class Theater {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,6 +13,7 @@ public class Theater {
     private int numRows;
     private int seatsPerRow;
 
+    // Getters og setters
     public Long getId() {
         return id;
     }

@@ -1,8 +1,10 @@
 package com.example.jor_opgave1_kinoxp.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
+@Table(name = "movie")
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +16,11 @@ public class Movie {
     private String actors;
     private int duration; // in minutes
 
+    private LocalDate firstShowDate;
+    private int showDays;
+    private Long theaterId;
+
+    // Getters og setters...
     public Long getId() {
         return id;
     }
@@ -60,5 +67,29 @@ public class Movie {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public LocalDate getFirstShowDate() {
+        return firstShowDate;
+    }
+
+    public void setFirstShowDate(LocalDate firstShowDate) {
+        this.firstShowDate = firstShowDate;
+    }
+
+    public int getShowDays() {
+        return showDays;
+    }
+
+    public void setShowDays(int showDays) {
+        this.showDays = showDays;
+    }
+
+    public Long getTheaterId() {
+        return theaterId;
+    }
+
+    public void setTheaterId(Long theaterId) {
+        this.theaterId = theaterId;
     }
 }

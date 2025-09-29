@@ -4,25 +4,57 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "shows")
 public class Show {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Movie movie;
-
-    @ManyToOne
-    private Theater theater;
-
+    private Long movieId;
+    private Long theaterId;
     private LocalDateTime showTime;
 
+    // Many-to-one relation til Movie
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movieId", insertable = false, updatable = false)
+    private Movie movie;
+
+    // Many-to-one relation til Theater
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theaterId", insertable = false, updatable = false)
+    private Theater theater;
+
+    // Getters og setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(Long movieId) {
+        this.movieId = movieId;
+    }
+
+    public Long getTheaterId() {
+        return theaterId;
+    }
+
+    public void setTheaterId(Long theaterId) {
+        this.theaterId = theaterId;
+    }
+
+    public LocalDateTime getShowTime() {
+        return showTime;
+    }
+
+    public void setShowTime(LocalDateTime showTime) {
+        this.showTime = showTime;
     }
 
     public Movie getMovie() {
@@ -39,13 +71,5 @@ public class Show {
 
     public void setTheater(Theater theater) {
         this.theater = theater;
-    }
-
-    public LocalDateTime getShowTime() {
-        return showTime;
-    }
-
-    public void setShowTime(LocalDateTime showTime) {
-        this.showTime = showTime;
     }
 }

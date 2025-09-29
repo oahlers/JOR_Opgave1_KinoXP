@@ -2,6 +2,7 @@
 <html lang="da">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medarbejder Dashboard - KinoXP</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
@@ -19,14 +20,27 @@
 <main>
     <section class="card">
         <h2>Velkommen til medarbejderområdet</h2>
-        <p>Her kan du administrere forestillinger, film og medarbejdere.</p>
+        <p>Her kan du administrere film og medarbejdere.</p>
 
         <div style="margin-top: 2rem;">
             <h3>Administration</h3>
-            <button onclick="location.href='/movies'">Administrer Film</button>
-            <button onclick="location.href='/shows'">Administrer Forestillinger</button>
-            <button onclick="location.href='/staff'">Administrer Medarbejdere</button>
+            <button id="manage-movies-btn">Administrer Film</button>
+            <button id="manage-staff-btn">Administrer Medarbejdere</button>
         </div>
+    </section>
+
+    <!-- Film Administration Section -->
+    <section id="movies-section" class="card" style="display: none; margin-top: 2rem;">
+        <h2>Film Administration</h2>
+        <button id="add-movie-btn" style="margin-bottom: 1rem;">Tilføj Ny Film</button>
+        <div id="movies-list"></div>
+    </section>
+
+    <!-- Medarbejder Administration Section -->
+    <section id="staff-section" class="card" style="display: none; margin-top: 2rem;">
+        <h2>Medarbejder Administration</h2>
+        <button id="add-staff-btn" style="margin-bottom: 1rem;">Tilføj Ny Medarbejder</button>
+        <div id="staff-list"></div>
     </section>
 </main>
 
@@ -34,11 +48,6 @@
     &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
 </footer>
 
-<script>
-    document.getElementById('staff-logout-btn').addEventListener('click', function() {
-        // Ryd evt. staff login session
-        window.location.href = '/';
-    });
-</script>
+<script src="/js/staff.js"></script>
 </body>
 </html>

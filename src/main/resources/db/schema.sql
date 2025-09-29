@@ -15,27 +15,27 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (phonenumber, password, full_name, email) VALUES
-                                                                ('+4561882812', 'jegelskerfilm', 'Sarah Black', 'sarahblack@example.com'),
-                                                                ('+4512321255', 'jegelskerfilm', 'Anders Sørensen', 'anders@example.com'),
-                                                                ('+4598756432', 'jegelskerfilm', 'Birgit Hansen', 'birgit@example.com'),
-                                                                ('+4558736290', 'jegelskerfilm', 'Christian Nielsen', 'christian@example.com'),
-                                                                ('+4587540912', 'jegelskerfilm', 'Daniel Pedersen', 'daniel@example.com'),
-                                                                ('+4575649309', 'jegelskerfilm', 'Eva Kristensen', 'eva@example.com'),
-                                                                ('+4576980012', 'jegelskerfilm', 'Frederik Madsen', 'frederik@example.com'),
-                                                                ('+4576540011', 'jegelskerfilm', 'Grethe Jensen', 'grethe@example.com'),
-                                                                ('+4565881233', 'jegelskerfilm', 'Henrik Larsen', 'henrik@example.com'),
-                                                                ('+4584917688', 'jegelskerfilm', 'Ida Mortensen', 'ida@example.com'),
-                                                                ('+4547120019', 'jegelskerfilm', 'Jakob Olsen', 'jakob@example.com'),
-                                                                ('+4582018784', 'jegelskerfilm', 'Karina Johansen', 'karina@example.com'),
-                                                                ('+4592800043', 'jegelskerfilm', 'Lars Petersen', 'lars@example.com'),
-                                                                ('+4581875501', 'jegelskerfilm', 'Mia Andersen', 'mia@example.com'),
-                                                                ('+4598002812', 'jegelskerfilm', 'Niels Thomsen', 'niels@example.com'),
-                                                                ('+4574829954', 'jegelskerfilm', 'Ole Rasmussen', 'ole@example.com'),
-                                                                ('+4512884377', 'jegelskerfilm', 'Pia Sørensen', 'pia@example.com'),
-                                                                ('+4575821821', 'jegelskerfilm', 'Rene Kristensen', 'rene@example.com'),
-                                                                ('+4582324401', 'jegelskerfilm', 'Sofie Hansen', 'sofie@example.com'),
-                                                                ('+4577829943', 'jegelskerfilm', 'Thomas Madsen', 'thomas@example.com'),
-                                                                ('+4584772123', 'jegelskerfilm', 'Ulrik Nielsen', 'ulrik@example.com');
+                                                                ('61882812', 'jegelskerfilm', 'Sarah Black', 'sarahblack@example.com'),
+                                                                ('12321255', 'jegelskerfilm', 'Anders Sørensen', 'anders@example.com'),
+                                                                ('98756432', 'jegelskerfilm', 'Birgit Hansen', 'birgit@example.com'),
+                                                                ('58736290', 'jegelskerfilm', 'Christian Nielsen', 'christian@example.com'),
+                                                                ('87540912', 'jegelskerfilm', 'Daniel Pedersen', 'daniel@example.com'),
+                                                                ('75649309', 'jegelskerfilm', 'Eva Kristensen', 'eva@example.com'),
+                                                                ('76980012', 'jegelskerfilm', 'Frederik Madsen', 'frederik@example.com'),
+                                                                ('76540011', 'jegelskerfilm', 'Grethe Jensen', 'grethe@example.com'),
+                                                                ('65881233', 'jegelskerfilm', 'Henrik Larsen', 'henrik@example.com'),
+                                                                ('84917688', 'jegelskerfilm', 'Ida Mortensen', 'ida@example.com'),
+                                                                ('47120019', 'jegelskerfilm', 'Jakob Olsen', 'jakob@example.com'),
+                                                                ('82018784', 'jegelskerfilm', 'Karina Johansen', 'karina@example.com'),
+                                                                ('92800043', 'jegelskerfilm', 'Lars Petersen', 'lars@example.com'),
+                                                                ('81875501', 'jegelskerfilm', 'Mia Andersen', 'mia@example.com'),
+                                                                ('98002812', 'jegelskerfilm', 'Niels Thomsen', 'niels@example.com'),
+                                                                ('74829954', 'jegelskerfilm', 'Ole Rasmussen', 'ole@example.com'),
+                                                                ('12884377', 'jegelskerfilm', 'Pia Sørensen', 'pia@example.com'),
+                                                                ('75821821', 'jegelskerfilm', 'Rene Kristensen', 'rene@example.com'),
+                                                                ('82324401', 'jegelskerfilm', 'Sofie Hansen', 'sofie@example.com'),
+                                                                ('77829943', 'jegelskerfilm', 'Thomas Madsen', 'thomas@example.com'),
+                                                                ('84772123', 'jegelskerfilm', 'Ulrik Nielsen', 'ulrik@example.com');
 
 -- Biografer
 DROP TABLE IF EXISTS theaters;
@@ -51,22 +51,25 @@ INSERT INTO theaters (name, num_rows, seats_per_row) VALUES
                                                          ('Small Theater', 20, 12),
                                                          ('Large Theater', 25, 16);
 
--- Film
-DROP TABLE IF EXISTS movies;
+-- Film (OPDATERET med nye felter)
+DROP TABLE IF EXISTS movie;
 
-CREATE TABLE movies (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        title VARCHAR(100),
-                        category VARCHAR(50),
-                        age_limit INT,
-                        actors TEXT,
-                        duration INT
+CREATE TABLE movie (
+                       id INT AUTO_INCREMENT PRIMARY KEY,
+                       title VARCHAR(100),
+                       category VARCHAR(50),
+                       age_limit INT,
+                       actors TEXT,
+                       duration INT,
+                       first_show_date DATE,
+                       show_days INT,
+                       theater_id INT
 );
 
-INSERT INTO movies (title, category, age_limit, actors, duration) VALUES
-                                                                      ('Inception', 'Sci-Fi', 12, 'Leonardo DiCaprio, Marion Cotillard', 148),
-                                                                      ('The Dark Knight', 'Action', 15, 'Christian Bale, Heath Ledger', 152),
-                                                                      ('Pulp Fiction', 'Crime', 18, 'John Travolta, Uma Thurman', 154);
+INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id) VALUES
+                                                                                                             ('Inception', 'Sci-Fi', 12, 'Leonardo DiCaprio, Marion Cotillard', 148, '2025-02-01', 7, 1),
+                                                                                                             ('The Dark Knight', 'Action', 15, 'Christian Bale, Heath Ledger', 152, '2025-02-01', 14, 2),
+                                                                                                             ('Pulp Fiction', 'Crime', 18, 'John Travolta, Uma Thurman', 154, '2025-02-01', 10, 1);
 
 -- Forestillinger
 DROP TABLE IF EXISTS shows;
@@ -76,7 +79,7 @@ CREATE TABLE shows (
                        movie_id INT,
                        theater_id INT,
                        show_time DATETIME,
-                       FOREIGN KEY (movie_id) REFERENCES movies(id),
+                       FOREIGN KEY (movie_id) REFERENCES movie(id),
                        FOREIGN KEY (theater_id) REFERENCES theaters(id)
 );
 
