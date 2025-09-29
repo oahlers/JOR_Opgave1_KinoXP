@@ -10,47 +10,46 @@ public class Booking {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "show_id")
     private Show show;
 
     private String customerName;
     private int seats;
-    private LocalDateTime bookingTime;
+    private LocalDateTime bookingTime = LocalDateTime.now();
 
     public Long getId() {
         return id;
-    }
-
-    public Show getShow() {
-        return show;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public int getSeats() {
-        return seats;
-    }
-
-    public LocalDateTime getBookingTime() {
-        return bookingTime;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
+    public Show getShow() {
+        return show;
+    }
+
     public void setShow(Show show) {
         this.show = show;
+    }
+
+    public String getCustomerName() {
+        return customerName;
     }
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
 
+    public int getSeats() {
+        return seats;
+    }
+
     public void setSeats(int seats) {
         this.seats = seats;
+    }
+
+    public LocalDateTime getBookingTime() {
+        return bookingTime;
     }
 
     public void setBookingTime(LocalDateTime bookingTime) {

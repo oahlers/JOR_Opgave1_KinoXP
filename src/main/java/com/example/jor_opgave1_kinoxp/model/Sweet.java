@@ -1,6 +1,7 @@
 package com.example.jor_opgave1_kinoxp.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 public class Sweet {
@@ -9,29 +10,30 @@ public class Sweet {
     private Long id;
 
     private String name;
-    private double price;
+
+    private BigDecimal price;
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public double getPrice() {
-        return price;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setPrice(double price) {
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }
