@@ -3,24 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medarbejdere</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Medarbejder Dashboard - KinoXP</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<nav>
-    <a href="index.html">🎬 Film</a>
-    <a href="staff.html" class="active">👥 Medarbejdere</a>
-    <a href="schedule.html">📅 Vagtplan</a>
-</nav>
+<header>
+    <h1>KinoXP</h1>
+    <nav>
+        <a href="/">Hjem</a>
+        <a href="/calendar">Film Kalender</a>
+        <div id="login-buttons" style="margin-left: auto;">
+            <button id="customer-login-btn">Kunde Login</button>
+            <button id="staff-login-btn" style="margin-left: 0.5rem;">Medarbejder Login</button>
+        </div>
+    </nav>
+</header>
 
 <main>
-    <h1>Medarbejdere</h1>
-    <button id="add-staff-btn">➕ Tilføj medarbejder</button>
-    <section id="staff-list"></section>
+    <section class="card">
+        <h2>Velkommen til medarbejderområdet</h2>
+        <p>Her kan du administrere film, medarbejdere og vagtplan.</p>
+
+        <div style="margin-top: 2rem;">
+            <h3>Administration</h3>
+            <button id="manage-movies-btn">Administrer Film</button>
+            <button id="manage-staff-btn">Administrer Medarbejdere</button>
+            <button id="manage-schedule-btn">Vagtplan</button>
+        </div>
+    </section>
+
+    <!-- Film Administration Section -->
+    <section id="movies-section" class="card" style="display: none; margin-top: 2rem;">
+        <h2>Film Administration</h2>
+        <button id="add-movie-btn" style="margin-bottom: 1rem;">Tilføj Ny Film</button>
+        <div id="movies-list"></div>
+    </section>
+
+    <!-- Medarbejder Administration Section -->
+    <section id="staff-section" class="card" style="display: none; margin-top: 2rem;">
+        <h2>Medarbejder Administration</h2>
+        <button id="add-staff-btn" style="margin-bottom: 1rem;">Tilføj Ny Medarbejder</button>
+        <div id="staff-list"></div>
+    </section>
+
+    <!-- Vagtplan Section -->
+    <section id="schedule-section" class="card" style="display: none; margin-top: 2rem;">
+        <h2>Vagtplan</h2>
+        <button id="add-shift-btn" style="margin-bottom: 1rem;">Tilføj Vagt</button>
+        <div id="schedule-calendar"></div>
+    </section>
 </main>
 
-<div id="modal" class="modal hidden"></div>
+<footer>
+    &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
+</footer>
 
-<script src="script.js"></script>
+<script src="/js/staff.js"></script>
 </body>
 </html>
