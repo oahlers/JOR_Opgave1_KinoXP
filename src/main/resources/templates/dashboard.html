@@ -16,21 +16,31 @@
 </header>
 
 <main>
-    <h2>Kommende Forestillinger</h2>
-
-    <!-- Placeholder - her indsætter vi senere JavaScript-kalender -->
-    <div class="card">
+    <!-- === Kalender Visning === -->
+    <section class="card">
+        <h2>Kommende Forestillinger</h2>
         <p>Kalender vises her snart...</p>
-    </div>
+        <!-- Du kan senere tilføje en rigtig kalender eller forestillinger med JS -->
+    </section>
 
-    <div style="margin-top: 2rem;">
-        <button onclick="window.location.href='medarbejder-login.html'">Login som medarbejder</button>
-        <button onclick="window.location.href='kunde-login.html'" style="margin-left: 1rem;">Login som kunde</button>
-    </div>
+    <!-- === Login Sektion === -->
+    <section style="margin-top: 2rem;">
+        <h2>Login</h2>
+        <div>
+            <button id="staff-login-btn">Login som medarbejder</button>
+            <button id="customer-login-btn" style="margin-left: 1rem;">Login som kunde</button>
+        </div>
+
+        <!-- Container for kunde-login SPA -->
+        <div id="spa-container" style="margin-top: 2rem;"></div>
+    </section>
 </main>
 
 <footer>
     &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
 </footer>
+
+<!-- === SPA JS === -->
+<script src="/js/dashboard.js" defer></script>
 </body>
 </html>
