@@ -1,7 +1,7 @@
 package com.example.jor_opgave1_kinoxp.controller;
 
 import com.example.jor_opgave1_kinoxp.model.Movie;
-import com.example.jor_opgave1_kinoxp.repository.MovieRepository;
+import com.example.jor_opgave1_kinoxp.service.MovieService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,46 +10,34 @@ import java.util.List;
 @RequestMapping("/api/movies")
 public class MovieController {
 
-    private final MovieRepository movieRepository;
+    private final MovieService movieService;
 
-    public MovieController(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
     }
 
-    // GET all movies
     @GetMapping
     public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+        return movieService.getAllMovies();
     }
 
-    // GET movie by id
     @GetMapping("/{id}")
-    public Movie getMovieById(@PathVariable Long id) {
-        return movieRepository.findById(id).orElseThrow();
+    public Movie getMovie(@PathVariable Long id) {
+        return movieService.getMovieById(id);
     }
 
-    // POST new movie
     @PostMapping
     public Movie createMovie(@RequestBody Movie movie) {
-        return movieRepository.save(movie);
+        return movieService.createMovie(movie);
     }
 
-    // PUT update movie
     @PutMapping("/{id}")
-    public Movie updateMovie(@PathVariable Long id, @RequestBody Movie updatedMovie) {
-        Movie movie = movieRepository.findById(id).orElseThrow();
-        movie.setTitle(updatedMovie.getTitle());
-        movie.setCategory(updatedMovie.getCategory());
-        movie.setAgeLimit(updatedMovie.getAgeLimit());
-        movie.setActors(updatedMovie.getActors());
-        movie.setDuration(updatedMovie.getDuration());
-        return movieRepository.save(movie);
+    public Movie updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
+        return movieService.updateMovie(id, movie);
     }
 
-    // DELETE movie
     @DeleteMapping("/{id}")
     public void deleteMovie(@PathVariable Long id) {
-        movieRepository.deleteById(id);
+        movieService.deleteMovie(id);
     }
 }
-
