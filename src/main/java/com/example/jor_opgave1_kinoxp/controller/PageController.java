@@ -6,9 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "dashboard.html";
+    }
+
     @GetMapping("/")
-    public String index() {
-        return "index.html";
+    public String landing() {
+        return "landing.html";
     }
 
     @GetMapping("/movies")
