@@ -1,19 +1,18 @@
-// Eksempeldata (kan senere hentes fra backend)
-const movies = [
-    { id: 1, title: "Action Movie", category: "Action", ageLimit: 15, duration: 120, actors: "Actor A, Actor B" },
-    { id: 2, title: "Romantic Movie", category: "Romance", ageLimit: 12, duration: 95, actors: "Actor C, Actor D" },
-    { id: 3, title: "Horror Movie", category: "Horror", ageLimit: 18, duration: 110, actors: "Actor E, Actor F" }
-];
-
 const moviesList = document.getElementById('movies-list');
 
-movies.forEach(movie => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `<h3>${movie.title}</h3><p>${movie.category}</p>`;
-    card.addEventListener('click', () => openModal(movie));
-    moviesList.appendChild(card);
-});
+// Hent film fra backend
+fetch('/api/movies')
+    .then(response => response.json())
+    .then(movies => {
+        movies.forEach(movie => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<h3>${movie.title}</h3><p>${movie.category}</p>`;
+            card.addEventListener('click', () => openModal(movie));
+            moviesList.appendChild(card);
+        });
+    })
+    .catch(error => console.error('Error fetching movies:', error));
 
 // Modal logik
 const modal = document.getElementById('movie-modal');
