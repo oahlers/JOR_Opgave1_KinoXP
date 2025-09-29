@@ -1,7 +1,9 @@
-CREATE DATABASE IF NOT EXISTS kinoXP;
+-- Opret databasen
+DROP DATABASE IF EXISTS kinoXP;
+CREATE DATABASE kinoXP;
 USE kinoXP;
 
--- Users
+-- Brugere
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
@@ -36,21 +38,21 @@ INSERT INTO users (username, password, full_name, email, phonenumber) VALUES
                                                                           ('thomas', 'jegelskerfilm', 'Thomas Madsen', 'thomas@example.com', '+4577829943'),
                                                                           ('ulrik', 'jegelskerfilm', 'Ulrik Nielsen', 'ulrik@example.com', '+4584772123');
 
--- Theaters
+-- Biografer
 DROP TABLE IF EXISTS theaters;
 
 CREATE TABLE theaters (
                           id INT AUTO_INCREMENT PRIMARY KEY,
                           name VARCHAR(50),
-                          rows INT,
+                          num_rows INT,
                           seats_per_row INT
 );
 
-INSERT INTO theaters (name, rows, seats_per_row) VALUES
-                                                     ('Small Theater', 20, 12),
-                                                     ('Large Theater', 25, 16);
+INSERT INTO theaters (name, num_rows, seats_per_row) VALUES
+                                                         ('Small Theater', 20, 12),
+                                                         ('Large Theater', 25, 16);
 
--- Movies
+-- Film
 DROP TABLE IF EXISTS movies;
 
 CREATE TABLE movies (
@@ -62,7 +64,7 @@ CREATE TABLE movies (
                         duration INT
 );
 
--- Shows
+-- Forestillinger
 DROP TABLE IF EXISTS shows;
 
 CREATE TABLE shows (
@@ -74,7 +76,7 @@ CREATE TABLE shows (
                        FOREIGN KEY (theater_id) REFERENCES theaters(id)
 );
 
--- Bookings
+-- Booking
 DROP TABLE IF EXISTS bookings;
 
 CREATE TABLE bookings (
@@ -86,7 +88,7 @@ CREATE TABLE bookings (
                           FOREIGN KEY (show_id) REFERENCES shows(id)
 );
 
--- Staff
+-- Personale
 DROP TABLE IF EXISTS staff;
 
 CREATE TABLE staff (
@@ -101,7 +103,7 @@ INSERT INTO staff (name, role) VALUES
                                    ('Charlie Madsen', 'Movie Operator'),
                                    ('Diana Nielsen', 'Inspector & Cleaning');
 
--- Roster
+-- Vagtplan
 DROP TABLE IF EXISTS roster;
 
 CREATE TABLE roster (
@@ -112,7 +114,7 @@ CREATE TABLE roster (
                         FOREIGN KEY (staff_id) REFERENCES staff(id)
 );
 
--- Sweets
+-- Slik
 DROP TABLE IF EXISTS sweets;
 
 CREATE TABLE sweets (

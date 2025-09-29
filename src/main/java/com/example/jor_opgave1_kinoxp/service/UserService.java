@@ -19,7 +19,24 @@ public class UserService {
     }
 
     public Optional<User> login(String username, String password) {
-        return userRepo.findByUsername(username)
-                .filter(u -> u.getPassword().equals(password));
+        System.out.println("Login attempt: username=" + username + ", password=" + password);
+
+        Optional<User> userOpt = userRepo.findByUsername(username);
+
+        if (userOpt.isEmpty()) {
+            System.out.println("User not found!");
+            return Optional.empty();
+        }
+
+        User user = userOpt.get();
+        boolean passwordMatch = user.getPassword().equals(password);
+        System.out.println("Password match: " + passwordMatch);
+
+        if (passwordMatch) {
+            return Optional.of(user);
+        } else {
+            return Optional.empty();
+        }
     }
+
 }

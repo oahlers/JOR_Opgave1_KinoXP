@@ -10,7 +10,6 @@ public class Roster {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "staff_id")
     private Staff staff;
 
     private LocalDate workDate;
@@ -20,28 +19,28 @@ public class Roster {
         return id;
     }
 
-    public Staff getStaff() {
-        return staff;
-    }
-
-    public LocalDate getWorkDate() {
-        return workDate;
-    }
-
-    public String getShift() {
-        return shift;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Staff getStaff() {
+        return staff;
     }
 
     public void setStaff(Staff staff) {
         this.staff = staff;
     }
 
+    public LocalDate getWorkDate() {
+        return workDate;
+    }
+
     public void setWorkDate(LocalDate workDate) {
         this.workDate = workDate;
+    }
+
+    public String getShift() {
+        return shift;
     }
 
     public void setShift(String shift) {

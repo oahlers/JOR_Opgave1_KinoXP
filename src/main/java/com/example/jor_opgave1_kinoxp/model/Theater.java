@@ -1,7 +1,6 @@
 package com.example.jor_opgave1_kinoxp.model;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 public class Theater {
@@ -10,49 +9,38 @@ public class Theater {
     private Long id;
 
     private String name;
-    private int rows;
+    private int numRows;
     private int seatsPerRow;
-
-    @OneToMany(mappedBy = "theater")
-    private List<Show> shows;
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public int getSeatsPerRow() {
-        return seatsPerRow;
-    }
-
-    public List<Show> getShows() {
-        return shows;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setRows(int rows) {
-        this.rows = rows;
+    public int getNumRows() {
+        return numRows;
+    }
+
+    public void setNumRows(int numRows) {
+        this.numRows = numRows;
+    }
+
+    public int getSeatsPerRow() {
+        return seatsPerRow;
     }
 
     public void setSeatsPerRow(int seatsPerRow) {
         this.seatsPerRow = seatsPerRow;
-    }
-
-    public void setShows(List<Show> shows) {
-        this.shows = shows;
     }
 }
