@@ -21,28 +21,8 @@ public class PageController {
         return "movies.html";
     }
 
-    @GetMapping("/shows")
-    public String shows() {
-        return "shows.html";
-    }
-
-    @GetMapping("/bookings")
-    public String bookings() {
-        return "bookings.html";
-    }
-
     @GetMapping("/staff")
     public String staff() {
         return "staff.html";
-    }
-
-    @GetMapping("/roster")
-    public String roster() {
-        return "roster.html";
-    }
-
-    @GetMapping("/sweets")
-    public String sweets() {
-        return "sweets.html";
     }
 }

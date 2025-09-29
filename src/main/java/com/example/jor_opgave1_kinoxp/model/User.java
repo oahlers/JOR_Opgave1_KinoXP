@@ -9,12 +9,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "full_name", nullable = false)
     private String fullName;
-    private String username;
-    private String password;
-    private String email;
+
+    @Column(name = "phonenumber", unique = true, nullable = false)
     private String phonenumber;
 
+    @Column(nullable = false)
+    private String password;
+
+    private String email;
+
+    // Getters og setters
     public Long getId() {
         return id;
     }
@@ -31,12 +37,12 @@ public class User {
         this.fullName = fullName;
     }
 
-    public String getUsername() {
-        return username;
+    public String getPhonenumber() {
+        return phonenumber;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
     }
 
     public String getPassword() {
@@ -53,13 +59,5 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhonenumber() {
-        return phonenumber;
-    }
-
-    public void setPhonenumber(String phonenumber) {
-        this.phonenumber = phonenumber;
     }
 }

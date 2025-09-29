@@ -18,10 +18,10 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public Optional<User> login(String username, String password) {
-        System.out.println("Login attempt: username=" + username + ", password=" + password);
+    public Optional<User> login(String phonenumber, String password) {
+        System.out.println("Login attempt: phonenumber=" + phonenumber + ", password=" + password);
 
-        Optional<User> userOpt = userRepo.findByUsername(username);
+        Optional<User> userOpt = userRepo.findByPhonenumber(phonenumber);
 
         if (userOpt.isEmpty()) {
             System.out.println("User not found!");
@@ -38,5 +38,4 @@ public class UserService {
             return Optional.empty();
         }
     }
-
 }

@@ -23,7 +23,7 @@ public class UserController {
 
     @PostMapping("/login")
     public User login(@RequestBody User loginRequest) {
-        Optional<User> user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-        return user.orElseThrow(() -> new RuntimeException("Forkert brugernavn eller adgangskode"));
+        Optional<User> user = userService.login(loginRequest.getPhonenumber(), loginRequest.getPassword());
+        return user.orElseThrow(() -> new RuntimeException("Forkert telefonnummer eller adgangskode"));
     }
 }

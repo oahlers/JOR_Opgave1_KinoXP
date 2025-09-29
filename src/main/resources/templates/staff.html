@@ -1,10 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Medarbejder Dashboard - KinoXP</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+<header>
+    <h1>Medarbejder Dashboard</h1>
+    <nav>
+        <a href="/">Hjem</a>
+        <a href="/dashboard">Kalender</a>
+        <a href="/movies">Film</a>
+        <button id="staff-logout-btn" style="float: right;">Log ud</button>
+    </nav>
+</header>
 
+<main>
+    <section class="card">
+        <h2>Velkommen til medarbejderområdet</h2>
+        <p>Her kan du administrere forestillinger, film og medarbejdere.</p>
+
+        <div style="margin-top: 2rem;">
+            <h3>Administration</h3>
+            <button onclick="location.href='/movies'">Administrer Film</button>
+            <button onclick="location.href='/shows'">Administrer Forestillinger</button>
+            <button onclick="location.href='/staff'">Administrer Medarbejdere</button>
+        </div>
+    </section>
+</main>
+
+<footer>
+    &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
+</footer>
+
+<script>
+    document.getElementById('staff-logout-btn').addEventListener('click', function() {
+        // Ryd evt. staff login session
+        window.location.href = '/';
+    });
+</script>
 </body>
 </html>

@@ -5,6 +5,7 @@ import com.example.jor_opgave1_kinoxp.repository.StaffRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StaffService {
@@ -31,10 +32,24 @@ public class StaffService {
         Staff staff = staffRepository.findById(id).orElseThrow();
         staff.setName(updatedStaff.getName());
         staff.setRole(updatedStaff.getRole());
+        staff.setUsername(updatedStaff.getUsername());
         return staffRepository.save(staff);
     }
 
     public void deleteStaff(Long id) {
         staffRepository.deleteById(id);
+    }
+
+    // Tilføj login metode
+    public Optional<Staff> login(String username, String password) {
+        Optional<Staff> staffOpt = staffRepository.findByUsername(username);
+
+        if (staffOpt.isPresent()) {
+            Staff staff = staffOpt.get();
+            if (staff.getPassword().equals(password)) {
+                return Optional.of(staff);
+            }
+        }
+        return Optional.empty();
     }
 }

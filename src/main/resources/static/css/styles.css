@@ -12,8 +12,8 @@ body {
 header {
     background: #1c1c1c;
     padding: 1rem;
-    text-align: center;
     border-bottom: 2px solid #e50914;
+    position: relative;
 }
 
 header h1 {
@@ -21,10 +21,15 @@ header h1 {
     font-size: 2rem;
     color: #e50914;
     text-shadow: 1px 1px 3px black;
+    text-align: center;
 }
 
 nav {
     margin-top: 0.5rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 nav a {
@@ -37,6 +42,39 @@ nav a {
 
 nav a:hover {
     color: #e50914;
+}
+
+/* === User Welcome in Header === */
+#user-welcome {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #f0f0f0;
+}
+
+#user-welcome span {
+    font-weight: bold;
+    color: #e50914;
+}
+
+#logout-btn {
+    background: #333;
+    color: #fff;
+    border: 1px solid #e50914;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#logout-btn:hover {
+    background: #e50914;
+    color: #fff;
 }
 
 /* === Main Content === */
@@ -187,4 +225,31 @@ footer {
 #register-msg {
     font-size: 0.95rem;
     text-align: center;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    header {
+        padding: 0.5rem;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    nav {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    #user-welcome {
+        position: static;
+        transform: none;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    main {
+        padding: 1rem;
+    }
 }
