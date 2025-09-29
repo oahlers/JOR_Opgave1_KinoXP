@@ -1,9 +1,11 @@
 package com.example.jor_opgave1_kinoxp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "theaters")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Theater {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

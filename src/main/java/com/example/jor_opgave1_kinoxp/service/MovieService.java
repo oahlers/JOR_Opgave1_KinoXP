@@ -28,7 +28,7 @@ public class MovieService {
     }
 
     public Movie getMovieById(Long id) {
-        return movieRepository.findById(id).orElseThrow();
+        return movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found with id: " + id));
     }
 
     @Transactional
@@ -45,7 +45,9 @@ public class MovieService {
 
     @Transactional
     public Movie updateMovie(Long id, Movie updatedMovie) {
-        Movie movie = movieRepository.findById(id).orElseThrow();
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Movie not found with id: " + id));
+
         movie.setTitle(updatedMovie.getTitle());
         movie.setCategory(updatedMovie.getCategory());
         movie.setAgeLimit(updatedMovie.getAgeLimit());
@@ -64,6 +66,7 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
+    @Transactional
     public void deleteMovie(Long id) {
         // Slet først alle tilknyttede shows
         showRepository.deleteByMovieId(id);
@@ -73,23 +76,23 @@ public class MovieService {
 
     private void generateShowsForMovie(Movie movie) {
         LocalDate currentDate = movie.getFirstShowDate();
-        LocalDate endDate = currentDate.plusDays(movie.getShowDays());
+        LocalDate endDate = currentDate.plusDays(movie.getShowDays() - 1);
 
-        // Standard show-tider
+        System.out.println("Generating shows for movie: " + movie.getTitle());
+        System.out.println("From: " + currentDate + " to: " + endDate);
+        System.out.println("Theater: " + movie.getTheaterId());
+
+        // Standard show-tider for alle film
         LocalTime[] showTimes = {
                 LocalTime.of(14, 0),  // 14:00
                 LocalTime.of(17, 0),  // 17:00
-                LocalTime.of(20, 0),  // 20:00
-                LocalTime.of(23, 0)   // 23:00 (kun for voksne film)
+                LocalTime.of(20, 0)   // 20:00
         };
+
+        int showCount = 0;
 
         while (!currentDate.isAfter(endDate)) {
             for (LocalTime showTime : showTimes) {
-                // Skip late shows for børnefilm
-                if (showTime.equals(LocalTime.of(23, 0)) && movie.getAgeLimit() < 15) {
-                    continue;
-                }
-
                 LocalDateTime showDateTime = LocalDateTime.of(currentDate, showTime);
 
                 Show show = new Show();
@@ -98,8 +101,13 @@ public class MovieService {
                 show.setShowTime(showDateTime);
 
                 showRepository.save(show);
+                showCount++;
+
+                System.out.println("Created show: " + showDateTime + " for theater " + movie.getTheaterId());
             }
             currentDate = currentDate.plusDays(1);
         }
+
+        System.out.println("Total shows created: " + showCount);
     }
 }

@@ -1,6 +1,9 @@
 package com.example.jor_opgave1_kinoxp.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "staff")
@@ -15,8 +18,13 @@ public class Staff {
     @Column(nullable = false)
     private String password;
 
-    private String name;
-    private String role;
+    private String fullName;
+    private String position;
+    private Double totalHours = 0.0;
+
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // Tilføj denne annotation for at undgå cirkulær reference
+    private List<Shift> shifts = new ArrayList<>();
 
     // Getters og setters
     public Long getId() { return id; }
@@ -28,9 +36,15 @@ public class Staff {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public String getPosition() { return position; }
+    public void setPosition(String position) { this.position = position; }
+
+    public Double getTotalHours() { return totalHours; }
+    public void setTotalHours(Double totalHours) { this.totalHours = totalHours; }
+
+    public List<Shift> getShifts() { return shifts; }
+    public void setShifts(List<Shift> shifts) { this.shifts = shifts; }
 }

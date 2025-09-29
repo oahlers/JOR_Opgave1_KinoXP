@@ -17,11 +17,16 @@ public class StaffService {
     }
 
     public List<Staff> getAllStaff() {
-        return staffRepository.findAll();
+        List<Staff> staffList = staffRepository.findAll();
+        // Sørg for at shifts ikke loades lazy
+        staffList.forEach(staff -> staff.getShifts().size()); // Trigger lazy loading
+        return staffList;
     }
 
     public Staff getStaffById(Long id) {
-        return staffRepository.findById(id).orElseThrow();
+        Staff staff = staffRepository.findById(id).orElseThrow();
+        staff.getShifts().size(); // Trigger lazy loading
+        return staff;
     }
 
     public Staff createStaff(Staff staff) {
@@ -30,9 +35,12 @@ public class StaffService {
 
     public Staff updateStaff(Long id, Staff updatedStaff) {
         Staff staff = staffRepository.findById(id).orElseThrow();
-        staff.setName(updatedStaff.getName());
-        staff.setRole(updatedStaff.getRole());
+        staff.setFullName(updatedStaff.getFullName());
+        staff.setPosition(updatedStaff.getPosition());
         staff.setUsername(updatedStaff.getUsername());
+        if (updatedStaff.getPassword() != null && !updatedStaff.getPassword().isEmpty()) {
+            staff.setPassword(updatedStaff.getPassword());
+        }
         return staffRepository.save(staff);
     }
 
@@ -40,14 +48,21 @@ public class StaffService {
         staffRepository.deleteById(id);
     }
 
-    // Tilføj login metode
     public Optional<Staff> login(String username, String password) {
         Optional<Staff> staffOpt = staffRepository.findByUsername(username);
 
         if (staffOpt.isPresent()) {
             Staff staff = staffOpt.get();
+            // Returner en "clean" version uden shifts for login
             if (staff.getPassword().equals(password)) {
-                return Optional.of(staff);
+                Staff cleanStaff = new Staff();
+                cleanStaff.setId(staff.getId());
+                cleanStaff.setUsername(staff.getUsername());
+                cleanStaff.setFullName(staff.getFullName());
+                cleanStaff.setPosition(staff.getPosition());
+                cleanStaff.setTotalHours(staff.getTotalHours());
+                // Undlad at sætte shifts og password
+                return Optional.of(cleanStaff);
             }
         }
         return Optional.empty();

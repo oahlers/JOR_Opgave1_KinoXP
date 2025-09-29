@@ -3,38 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalender - KinoXP</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <title>Forside - KinoXP</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <header>
     <h1>KinoXP</h1>
     <nav>
         <a href="/">Hjem</a>
-        <a href="/movies">Film</a>
-        <a href="/shows">Forestilling</a>
-        <!-- Velkomst og log ud knap bliver tilføjet dynamisk her via JavaScript -->
+        <a href="/calendar">Film Kalender</a>
+        <div id="login-buttons" style="margin-left: auto;">
+            <button id="customer-login-btn">Kunde Login</button>
+            <button id="staff-login-btn" style="margin-left: 0.5rem;">Medarbejder Login</button>
+        </div>
     </nav>
 </header>
 
 <main>
-    <!-- === Kalender Visning === -->
     <section class="card">
-        <h2>Kommende Forestillinger</h2>
-        <p>Kalender vises her snart...</p>
-        <!-- Du kan senere tilføje en rigtig kalender eller forestillinger med JS -->
+        <h2>Velkommen til KinoXP</h2>
+        <p>Din lokale biograf for en førsteklasses filmoplevelse!</p>
+        <p>Se vores filmudvalg og book billetter til kommende forestillinger.</p>
     </section>
 
-    <!-- === Login Sektion === -->
-    <section id="login-section" style="margin-top: 2rem;">
-        <h2>Login</h2>
-        <div>
-            <button id="staff-login-btn">Login som medarbejder</button>
-            <button id="customer-login-btn" style="margin-left: 1rem;">Login som kunde</button>
-        </div>
-
-        <!-- Container for kunde-login SPA -->
-        <div id="spa-container" style="margin-top: 2rem;"></div>
+    <section id="movies-overview" class="card">
+        <h2>Kommende Film</h2>
+        <div id="movies-list"></div>
     </section>
 </main>
 
@@ -42,7 +36,6 @@
     &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
 </footer>
 
-<!-- === SPA JS === -->
-<script src="/js/dashboard.js" defer></script>
+<script src="/js/dashboard.js"></script>
 </body>
 </html>

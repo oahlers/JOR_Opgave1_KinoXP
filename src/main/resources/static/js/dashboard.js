@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const customerBtn = document.getElementById("customer-login-btn");
     const staffBtn = document.getElementById("staff-login-btn");
 
-    // Tjek om bruger allerede er logget ind
     checkLoginStatus();
+    loadMovies();
 
     if (customerBtn) {
         customerBtn.addEventListener("click", () => {
@@ -18,23 +18,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+async function loadMovies() {
+    try {
+        const response = await fetch('/api/movies');
+        const movies = await response.json();
+        displayMovies(movies);
+    } catch (error) {
+        console.error('Error loading movies:', error);
+    }
+}
+
+function displayMovies(movies) {
+    const moviesList = document.getElementById('movies-list');
+    moviesList.innerHTML = '';
+
+    if (!movies.length) {
+        moviesList.innerHTML = '<p>Ingen film fundet.</p>';
+        return;
+    }
+
+    movies.forEach(movie => {
+        const movieCard = document.createElement('div');
+        movieCard.className = 'card';
+        movieCard.style.marginBottom = '1rem';
+
+        let showInfo = '';
+        if (movie.firstShowDate && movie.showDays) {
+            const firstShow = new Date(movie.firstShowDate);
+            const lastShow = new Date(firstShow);
+            lastShow.setDate(firstShow.getDate() + Math.min(movie.showDays, 90));
+            showInfo = `
+                <p><strong>Første visning:</strong> ${firstShow.toLocaleDateString('da-DK')}</p>
+                <p><strong>Vises til:</strong> ${lastShow.toLocaleDateString('da-DK')}</p>
+            `;
+        }
+
+        movieCard.innerHTML = `
+            <h3>${movie.title}</h3>
+            <p><strong>Kategori:</strong> ${movie.category}</p>
+            <p><strong>Aldersgrænse:</strong> ${movie.ageLimit}+</p>
+            <p><strong>Varighed:</strong> ${movie.duration} min.</p>
+            <p><strong>Skuespillere:</strong> ${movie.actors}</p>
+            ${showInfo}
+            <div style="margin-top: 1rem;">
+                <button onclick="window.location.href='/calendar'">Se forestillinger</button>
+            </div>
+        `;
+        moviesList.appendChild(movieCard);
+    });
+}
+
 function checkLoginStatus() {
     const loggedInUser = localStorage.getItem('loggedInUser');
-    const loginSection = document.getElementById('login-section');
+    const loginButtons = document.getElementById('login-buttons');
 
     if (loggedInUser) {
         const user = JSON.parse(loggedInUser);
-
-        // Find header elementet og tilføj velkomst i navigationen
         const nav = document.querySelector('nav');
         if (nav) {
-            // Fjern evt. eksisterende velkomst
             const existingWelcome = document.getElementById('user-welcome');
             if (existingWelcome) {
                 existingWelcome.remove();
             }
 
-            // Tilføj velkomst og log ud knap i navigationen
             const welcomeElement = document.createElement('div');
             welcomeElement.id = 'user-welcome';
             welcomeElement.innerHTML = `
@@ -43,21 +89,17 @@ function checkLoginStatus() {
             `;
 
             nav.appendChild(welcomeElement);
-
             document.getElementById('logout-btn').addEventListener('click', logout);
         }
 
-        // Skjul login sektionen på siden
-        if (loginSection) {
-            loginSection.style.display = 'none';
+        if (loginButtons) {
+            loginButtons.style.display = 'none';
         }
     } else {
-        // Vis login sektionen hvis ikke logget ind
-        if (loginSection) {
-            loginSection.style.display = 'block';
+        if (loginButtons) {
+            loginButtons.style.display = 'block';
         }
 
-        // Fjern velkomst fra header hvis den eksisterer
         const existingWelcome = document.getElementById('user-welcome');
         if (existingWelcome) {
             existingWelcome.remove();
@@ -92,7 +134,6 @@ function openStaffModal() {
     document.getElementById("modal-close").addEventListener("click", closeModal);
     document.getElementById("modal-overlay").addEventListener("click", closeModal);
 
-    // Bind staff login form
     document.getElementById("staff-login-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const form = e.target;
@@ -101,20 +142,24 @@ function openStaffModal() {
             password: form.password.value
         };
 
-        const res = await fetch("/api/staff/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
+        try {
+            const res = await fetch("/api/staff/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
 
-        if (res.ok) {
-            const staff = await res.json();
-            document.getElementById("staff-login-error").textContent = "";
-            closeModal();
-            // Redirect til staff side
-            window.location.href = "/staff";
-        } else {
-            document.getElementById("staff-login-error").textContent = "Forkert brugernavn eller adgangskode.";
+            if (res.ok) {
+                const staff = await res.json();
+                document.getElementById("staff-login-error").textContent = "";
+                closeModal();
+                window.location.href = "/staff";
+            } else {
+                document.getElementById("staff-login-error").textContent = "Forkert brugernavn eller adgangskode.";
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            document.getElementById("staff-login-error").textContent = "Fejl ved login. Prøv igen senere.";
         }
     });
 }
@@ -197,24 +242,25 @@ function bindLoginForm() {
             password: form.password.value
         };
 
-        const res = await fetch("/api/users/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
+        try {
+            const res = await fetch("/api/users/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
 
-        if (res.ok) {
-            const user = await res.json();
-            document.getElementById("login-error").textContent = "";
-
-            // Gem bruger i localStorage
-            localStorage.setItem('loggedInUser', JSON.stringify(user));
-
-            closeModal();
-            // Opdater UI for at vise velkomst
-            checkLoginStatus();
-        } else {
-            document.getElementById("login-error").textContent = "Forkert telefonnummer eller adgangskode.";
+            if (res.ok) {
+                const user = await res.json();
+                document.getElementById("login-error").textContent = "";
+                localStorage.setItem('loggedInUser', JSON.stringify(user));
+                closeModal();
+                checkLoginStatus();
+            } else {
+                document.getElementById("login-error").textContent = "Forkert telefonnummer eller adgangskode.";
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            document.getElementById("login-error").textContent = "Fejl ved login. Prøv igen senere.";
         }
     });
 }
@@ -229,23 +275,27 @@ function bindRegisterForm() {
             password: form.password.value
         };
 
-        const res = await fetch("/api/users/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
+        try {
+            const res = await fetch("/api/users/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
 
-        if (res.ok) {
-            document.getElementById("register-msg").textContent = "Bruger oprettet! Du kan nu logge ind.";
-            document.getElementById("register-msg").style.color = "green";
-            form.reset();
-
-            // Skift til login view efter succesfuld registrering
-            setTimeout(() => {
-                document.getElementById("login-view-btn").click();
-            }, 1500);
-        } else {
-            document.getElementById("register-msg").textContent = "Oprettelse fejlede. Telefonnummer er måske allerede i brug.";
+            if (res.ok) {
+                document.getElementById("register-msg").textContent = "Bruger oprettet! Du kan nu logge ind.";
+                document.getElementById("register-msg").style.color = "green";
+                form.reset();
+                setTimeout(() => {
+                    document.getElementById("login-view-btn").click();
+                }, 1500);
+            } else {
+                document.getElementById("register-msg").textContent = "Oprettelse fejlede. Telefonnummer er måske allerede i brug.";
+                document.getElementById("register-msg").style.color = "red";
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            document.getElementById("register-msg").textContent = "Fejl ved oprettelse. Prøv igen senere.";
             document.getElementById("register-msg").style.color = "red";
         }
     });

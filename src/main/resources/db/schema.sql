@@ -69,7 +69,9 @@ CREATE TABLE movie (
 INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id) VALUES
                                                                                                              ('Inception', 'Sci-Fi', 12, 'Leonardo DiCaprio, Marion Cotillard', 148, '2025-02-01', 7, 1),
                                                                                                              ('The Dark Knight', 'Action', 15, 'Christian Bale, Heath Ledger', 152, '2025-02-01', 14, 2),
-                                                                                                             ('Pulp Fiction', 'Crime', 18, 'John Travolta, Uma Thurman', 154, '2025-02-01', 10, 1);
+                                                                                                             ('Pulp Fiction', 'Crime', 18, 'John Travolta, Uma Thurman', 154, '2025-02-01', 10, 1),
+                                                                                                             ('The Matrix', 'Sci-Fi', 15, 'Keanu Reeves, Laurence Fishburne', 136, '2025-02-03', 10, 2),
+                                                                                                             ('Forrest Gump', 'Drama', 11, 'Tom Hanks, Robin Wright', 142, '2025-02-04', 14, 1);
 
 -- Forestillinger
 DROP TABLE IF EXISTS shows;
@@ -87,7 +89,13 @@ INSERT INTO shows (movie_id, theater_id, show_time) VALUES
                                                         (1, 1, '2025-02-01 18:00:00'),
                                                         (1, 1, '2025-02-01 21:00:00'),
                                                         (2, 2, '2025-02-01 19:30:00'),
-                                                        (3, 1, '2025-02-02 20:00:00');
+                                                        (3, 1, '2025-02-02 20:00:00'),
+                                                        (4, 2, '2025-02-03 17:30:00'),
+                                                        (4, 2, '2025-02-03 20:30:00'),
+                                                        (5, 1, '2025-02-04 19:00:00'),
+                                                        (5, 1, '2025-02-04 22:00:00'),
+                                                        (1, 2, '2025-02-05 18:30:00'),
+                                                        (2, 1, '2025-02-05 21:00:00');
 
 -- Booking
 DROP TABLE IF EXISTS bookings;
@@ -104,41 +112,56 @@ CREATE TABLE bookings (
 INSERT INTO bookings (show_id, customer_name, seats) VALUES
                                                          (1, 'Sarah Black', 2),
                                                          (1, 'Anders Sørensen', 4),
-                                                         (2, 'Birgit Hansen', 3);
+                                                         (2, 'Birgit Hansen', 3),
+                                                         (3, 'Christian Nielsen', 2),
+                                                         (4, 'Daniel Pedersen', 5);
 
--- Personale
+-- Personale (OPDATERET med nye felter)
 DROP TABLE IF EXISTS staff;
 
 CREATE TABLE staff (
                        id INT AUTO_INCREMENT PRIMARY KEY,
                        username VARCHAR(50) NOT NULL UNIQUE,
                        password VARCHAR(255) NOT NULL,
-                       name VARCHAR(100),
-                       role VARCHAR(50)
+                       full_name VARCHAR(100),
+                       position VARCHAR(50),
+                       total_hours DOUBLE DEFAULT 0.0
 );
 
-INSERT INTO staff (username, password, name, role) VALUES
-                                                       ('alicej', 'staff123', 'Alice Jensen', 'Ticket & Sales'),
-                                                       ('bobh', 'staff123', 'Bob Hansen', 'Ticket & Sales'),
-                                                       ('charlie', 'staff123', 'Charlie Madsen', 'Movie Operator'),
-                                                       ('diana', 'staff123', 'Diana Nielsen', 'Inspector & Cleaning');
+INSERT INTO staff (username, password, full_name, position, total_hours) VALUES
+                                                                             ('alicej', 'staff123', 'Alice Jensen', 'Ticket & Sales', 32.5),
+                                                                             ('bobh', 'staff123', 'Bob Hansen', 'Ticket & Sales', 28.0),
+                                                                             ('charlie', 'staff123', 'Charlie Madsen', 'Movie Operator', 40.0),
+                                                                             ('diana', 'staff123', 'Diana Nielsen', 'Inspector & Cleaning', 36.0),
+                                                                             ('emily', 'staff123', 'Emily Petersen', 'Manager', 45.5),
+                                                                             ('frank', 'staff123', 'Frank Olsen', 'Security', 25.0);
 
--- Vagtplan
-DROP TABLE IF EXISTS roster;
+-- Vagtplan (NY struktur med detaljerede vagter, kun tilladte vagttider)
+DROP TABLE IF EXISTS shifts;
 
-CREATE TABLE roster (
+CREATE TABLE shifts (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         staff_id INT,
-                        work_date DATE,
-                        shift VARCHAR(20),
-                        FOREIGN KEY (staff_id) REFERENCES staff(id)
+                        shift_date DATE,
+                        start_time TIME,
+                        end_time TIME,
+                        shift_type VARCHAR(20),
+                        hours DOUBLE,
+                        FOREIGN KEY (staff_id) REFERENCES staff(id),
+                        CONSTRAINT chk_shift_times CHECK (
+                            (start_time = '13:00:00' AND end_time = '23:00:00') OR
+                            (start_time = '13:00:00' AND end_time = '18:00:00') OR
+                            (start_time = '18:00:00' AND end_time = '23:00:00')
+                            )
 );
 
-INSERT INTO roster (staff_id, work_date, shift) VALUES
-                                                    (1, '2025-02-01', 'Morning'),
-                                                    (2, '2025-02-01', 'Evening'),
-                                                    (3, '2025-02-01', 'Night'),
-                                                    (4, '2025-02-02', 'Morning');
+INSERT INTO shifts (staff_id, shift_date, start_time, end_time, shift_type, hours) VALUES
+                                                                                       (1, '2025-02-01', '13:00:00', '23:00:00', 'Day', 10.0),
+                                                                                       (2, '2025-02-01', '13:00:00', '18:00:00', 'Half Day', 5.0),
+                                                                                       (3, '2025-02-02', '18:00:00', '23:00:00', 'Evening', 5.0),
+                                                                                       (4, '2025-02-02', '13:00:00', '23:00:00', 'Day', 10.0),
+                                                                                       (5, '2025-02-03', '13:00:00', '18:00:00', 'Half Day', 5.0),
+                                                                                       (6, '2025-02-03', '18:00:00', '23:00:00', 'Evening', 5.0);
 
 -- Slik
 DROP TABLE IF EXISTS sweets;
@@ -154,4 +177,14 @@ INSERT INTO sweets (name, price) VALUES
                                      ('Nachos', 40.00),
                                      ('Slikpose', 35.00),
                                      ('Sodavand', 25.00),
-                                     ('Is', 30.00);
+                                     ('Is', 30.00),
+                                     ('Chips', 20.00),
+                                     ('Chokolade', 15.00),
+                                     ('Kaffe', 18.00),
+                                     ('The', 15.00),
+                                     ('Mineralvand', 12.00);
+
+-- Tilføj nye film for at teste kalenderen
+INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id) VALUES
+                                                                                                             ('Interstellar', 'Sci-Fi', 12, 'Matthew McConaughey, Anne Hathaway', 169, '2025-02-06', 10, 1),
+                                                                                                             ('The Godfather', 'Crime', 18, 'Marlon Brando, Al Pacino', 175, '2025-02-07', 14, 2);

@@ -1,10 +1,12 @@
 package com.example.jor_opgave1_kinoxp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "movie")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,10 +16,15 @@ public class Movie {
     private String category;
     private int ageLimit;
     private String actors;
-    private int duration; // in minutes
+    private int duration;
 
+    @Column(name = "first_show_date")
     private LocalDate firstShowDate;
+
+    @Column(name = "show_days")
     private int showDays;
+
+    @Column(name = "theater_id")
     private Long theaterId;
 
     // Getters og setters...

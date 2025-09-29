@@ -1,10 +1,12 @@
 package com.example.jor_opgave1_kinoxp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "shows")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Show {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,14 +19,16 @@ public class Show {
     // Many-to-one relation til Movie
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movieId", insertable = false, updatable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Movie movie;
 
     // Many-to-one relation til Theater
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theaterId", insertable = false, updatable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Theater theater;
 
-    // Getters og setters
+    // Getters og setters...
     public Long getId() {
         return id;
     }

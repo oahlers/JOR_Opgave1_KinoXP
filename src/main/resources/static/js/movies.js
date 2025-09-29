@@ -26,12 +26,11 @@ function displayMovies(movies) {
         movieCard.className = 'card';
         movieCard.style.marginBottom = '1rem';
 
-        // Beregn visningsperiode (maks 3 måneder)
         let showInfo = '';
         if (movie.firstShowDate && movie.showDays) {
             const firstShow = new Date(movie.firstShowDate);
             const lastShow = new Date(firstShow);
-            lastShow.setDate(firstShow.getDate() + Math.min(movie.showDays, 90)); // max 3 måneder
+            lastShow.setDate(firstShow.getDate() + Math.min(movie.showDays, 90));
             showInfo = `
                 <p><strong>Første visning:</strong> ${firstShow.toLocaleDateString('da-DK')} kl. ${firstShow.toLocaleTimeString('da-DK', {hour: '2-digit', minute:'2-digit'})}</p>
                 <p><strong>Vises til:</strong> ${lastShow.toLocaleDateString('da-DK')}</p>
@@ -54,14 +53,13 @@ function displayMovies(movies) {
     });
 }
 
-// Modal med booking
 async function openMovieModal(movieId) {
     try {
         const response = await fetch(`/api/movies/${movieId}`);
         const movie = await response.json();
 
         const today = new Date();
-        const maxBookingDate = new Date(today.getFullYear(), today.getMonth() + 2, today.getDate()); // max 2 måneder frem
+        const maxBookingDate = new Date(today.getFullYear(), today.getMonth() + 2, today.getDate());
 
         const modalHTML = `
             <div class="modal-overlay" id="modal-overlay"></div>
