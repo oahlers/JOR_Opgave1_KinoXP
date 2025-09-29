@@ -1,50 +1,112 @@
-const moviesList = document.getElementById('movies-list');
-
-// Hent film fra backend
-fetch('/api/movies')
-    .then(response => response.json())
-    .then(movies => {
-        movies.forEach(movie => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `<h3>${movie.title}</h3><p>${movie.category}</p>`;
-            card.addEventListener('click', () => openModal(movie));
-            moviesList.appendChild(card);
-        });
-    })
-    .catch(error => console.error('Error fetching movies:', error));
-
-// Modal logik
-const modal = document.getElementById('movie-modal');
-const closeModalBtn = document.getElementById('close-modal');
-
-closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
-window.addEventListener('click', e => {
-    if (e.target === modal) modal.style.display = 'none';
+document.addEventListener("DOMContentLoaded", () => {
+    loadMovies();
 });
 
-function openModal(movie) {
-    document.getElementById('modal-title').textContent = movie.title;
-    document.getElementById('modal-category').textContent = movie.category;
-    document.getElementById('modal-age').textContent = movie.ageLimit;
-    document.getElementById('modal-duration').textContent = movie.duration;
-    document.getElementById('modal-actors').textContent = movie.actors;
-
-    // Sæt booking dato: nuværende måned + 2 måneder
-    const bookingDate = document.getElementById('booking-date');
-    const today = new Date();
-    const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, today.getDate());
-    bookingDate.min = today.toISOString().split('T')[0];
-    bookingDate.max = maxDate.toISOString().split('T')[0];
-
-    modal.style.display = 'block';
+async function loadMovies() {
+    try {
+        const response = await fetch('/api/movies');
+        const movies = await response.json();
+        displayMovies(movies);
+    } catch (error) {
+        console.error('Error loading movies:', error);
+    }
 }
 
-// Booking form
-const bookingForm = document.getElementById('booking-form');
-bookingForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const date = document.getElementById('booking-date').value;
-    const seats = document.getElementById('num-seats').value;
-    document.getElementById('booking-message').textContent = `Du har booket ${seats} plads(er) til ${date}.`;
-});
+function displayMovies(movies) {
+    const moviesList = document.getElementById('movies-list');
+    moviesList.innerHTML = '';
+
+    if (!movies.length) {
+        moviesList.innerHTML = '<p>Ingen film fundet.</p>';
+        return;
+    }
+
+    movies.forEach(movie => {
+        const movieCard = document.createElement('div');
+        movieCard.className = 'card';
+        movieCard.style.marginBottom = '1rem';
+
+        // Beregn visningsperiode (maks 3 måneder)
+        let showInfo = '';
+        if (movie.firstShowDate && movie.showDays) {
+            const firstShow = new Date(movie.firstShowDate);
+            const lastShow = new Date(firstShow);
+            lastShow.setDate(firstShow.getDate() + Math.min(movie.showDays, 90)); // max 3 måneder
+            showInfo = `
+                <p><strong>Første visning:</strong> ${firstShow.toLocaleDateString('da-DK')} kl. ${firstShow.toLocaleTimeString('da-DK', {hour: '2-digit', minute:'2-digit'})}</p>
+                <p><strong>Vises til:</strong> ${lastShow.toLocaleDateString('da-DK')}</p>
+                <p><strong>Teater:</strong> ${movie.theaterId === 1 ? 'Small Theater' : 'Large Theater'}</p>
+            `;
+        }
+
+        movieCard.innerHTML = `
+            <h3>${movie.title}</h3>
+            <p><strong>Kategori:</strong> ${movie.category}</p>
+            <p><strong>Aldersgrænse:</strong> ${movie.ageLimit}+</p>
+            <p><strong>Varighed:</strong> ${movie.duration} min.</p>
+            <p><strong>Skuespillere:</strong> ${movie.actors}</p>
+            ${showInfo}
+            <div style="margin-top: 1rem;">
+                <button onclick="openMovieModal(${movie.id})">Se detaljer / Book</button>
+            </div>
+        `;
+        moviesList.appendChild(movieCard);
+    });
+}
+
+// Modal med booking
+async function openMovieModal(movieId) {
+    try {
+        const response = await fetch(`/api/movies/${movieId}`);
+        const movie = await response.json();
+
+        const today = new Date();
+        const maxBookingDate = new Date(today.getFullYear(), today.getMonth() + 2, today.getDate()); // max 2 måneder frem
+
+        const modalHTML = `
+            <div class="modal-overlay" id="modal-overlay"></div>
+            <div class="modal-box" id="modal-box" style="max-width: 500px;">
+                <button class="modal-close" id="modal-close">&times;</button>
+                <div id="modal-content">
+                    <h2>${movie.title}</h2>
+                    <p><strong>Kategori:</strong> ${movie.category}</p>
+                    <p><strong>Aldersgrænse:</strong> ${movie.ageLimit}+</p>
+                    <p><strong>Varighed:</strong> ${movie.duration} min.</p>
+                    <p><strong>Skuespillere:</strong> ${movie.actors}</p>
+                    <p><strong>Teater:</strong> ${movie.theaterId === 1 ? 'Small Theater' : 'Large Theater'}</p>
+                    <p><strong>Første visning:</strong> ${new Date(movie.firstShowDate).toLocaleDateString('da-DK')} kl. ${new Date(movie.firstShowDate).toLocaleTimeString('da-DK', {hour:'2-digit', minute:'2-digit'})}</p>
+                    <form id="booking-form">
+                        <label for="booking-date">Vælg dato:</label>
+                        <input type="date" id="booking-date" name="booking-date" min="${today.toISOString().split('T')[0]}" max="${maxBookingDate.toISOString().split('T')[0]}" required>
+                        <label for="num-seats">Antal pladser:</label>
+                        <input type="number" id="num-seats" name="num-seats" min="1" max="10" required>
+                        <button type="submit">Book</button>
+                    </form>
+                    <p id="booking-message"></p>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML("beforeend", modalHTML);
+
+        document.getElementById("modal-close").addEventListener("click", closeModal);
+        document.getElementById("modal-overlay").addEventListener("click", closeModal);
+
+        document.getElementById("booking-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const date = document.getElementById("booking-date").value;
+            const seats = document.getElementById("num-seats").value;
+            document.getElementById("booking-message").textContent = `Du har booket ${seats} plads(er) til ${date}.`;
+        });
+
+    } catch (error) {
+        console.error('Fejl ved åbning af modal:', error);
+    }
+}
+
+function closeModal() {
+    const overlay = document.getElementById("modal-overlay");
+    const modal = document.getElementById("modal-box");
+    if (overlay) overlay.remove();
+    if (modal) modal.remove();
+}
