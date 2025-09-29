@@ -1,6 +1,19 @@
 CREATE DATABASE schema;
 USE kinoXP;
 
+CREATE TABLE users (
+                       id INT AUTO_INCREMENT PRIMARY KEY,
+                       username VARCHAR(50) NOT NULL UNIQUE,
+                       password VARCHAR(255) NOT NULL,
+                       full_name VARCHAR(100),
+                       email VARCHAR(100) UNIQUE,
+                       phonenumber VARCHAR(15),
+                       role VARCHAR(20) DEFAULT 'CUSTOMER' -- fx CUSTOMER, ADMIN
+);
+
+INSERT INTO users (username, password, full_name, email, phonenumber, role) VALUES
+    ('sarahblack', 'jegelskerfilm', 'Sarah Black', 'sarahblack@example.com', '+4561882812', 'CUSTOMER');
+
 CREATE TABLE theaters (
                           id INT AUTO_INCREMENT PRIMARY KEY,
                           name VARCHAR(50),
