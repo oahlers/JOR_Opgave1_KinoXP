@@ -24,13 +24,27 @@ header h1 {
 }
 
 nav {
-    margin-top: 0.5rem;
-    position: relative;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.navbar-content,
+.login-buttons {
+    flex: none;
+    display: flex;
     align-items: center;
 }
 
+.navbar-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: max-content;
+    z-index: 1;
+}
 nav a {
     color: #f0f0f0;
     text-decoration: none;
@@ -47,6 +61,12 @@ nav a.active {
     font-weight: bold;
     color: #e50914;
     border-bottom: 2px solid #e6e6e6;
+}
+
+nav h3 {
+    margin: 0 auto;
+    text-align: center;
+    flex: 1;
 }
 
 /* === User Welcome in Header === */
