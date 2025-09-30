@@ -31,6 +31,9 @@ public class Movie {
     @Column(name = "ticket_price")
     private BigDecimal ticketPrice;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     // Getters og setters...
     public Long getId() {
         return id;
@@ -110,5 +113,13 @@ public class Movie {
 
     public void setTicketPrice(BigDecimal ticketPrice) {
         this.ticketPrice = ticketPrice;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

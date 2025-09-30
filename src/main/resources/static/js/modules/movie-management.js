@@ -60,6 +60,8 @@ export class MovieManager {
                         <input type="number" id="movie-show-days" min="1" max="90" value="${isEdit ? movie.showDays : 7}" required>
                         <label for="movie-ticket-price">Billetpris (DKK)</label>
                         <input type="number" id="movie-ticket-price" step="0.5" min="0" value="${isEdit && movie.ticketPrice != null ? movie.ticketPrice : ''}" required>
+                        <label for="movie-image-url">Billede URL</label>
+                        <input type="url" id="movie-image-url" placeholder="https://..." value="${isEdit && movie.imageUrl ? movie.imageUrl : ''}">
                         <select id="movie-theater" required>
                             <option value="">Vælg teater</option>
                             <option value="1" ${isEdit && Number(movie.theaterId) === 1 ? 'selected' : ''}>Small Theater</option>
@@ -86,6 +88,7 @@ export class MovieManager {
                 firstShowDate: document.getElementById("movie-first-date").value,
                 showDays: parseInt(document.getElementById("movie-show-days").value),
                 ticketPrice: parseFloat(document.getElementById("movie-ticket-price").value),
+                imageUrl: document.getElementById("movie-image-url").value || null,
                 theaterId: parseInt(document.getElementById("movie-theater").value)
             };
 

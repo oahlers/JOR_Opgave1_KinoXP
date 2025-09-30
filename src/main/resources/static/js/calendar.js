@@ -13,7 +13,8 @@ class CalendarPage {
             openShowDetails: (showId) => this.openShowDetails(showId),
             bookShow: (showId) => this.bookShow(showId),
             showAlternativeShows: (movieId, showTime, currentTheaterId) =>
-                this.showAlternativeShows(movieId, showTime, currentTheaterId)
+                this.showAlternativeShows(movieId, showTime, currentTheaterId),
+            openMovieDay: (movieId, dateStr) => this.openMovieDay(movieId, dateStr)
         };
     }
 
@@ -93,7 +94,7 @@ class CalendarPage {
                 <div class="calendar-day ${isToday ? 'today' : ''}">
                     <div class="day-number">${day}</div>
                     <div class="shows-list">
-                        ${this.calendarManager.generateShowsHTML(dayShows)}
+                        ${this.generateMovieTitlesHTML(dayShows, date)}
                     </div>
                 </div>
             `;
@@ -126,6 +127,104 @@ class CalendarPage {
             this.calendarManager.currentDate = new Date();
             this.displayCalendar();
         });
+    }
+
+    generateMovieTitlesHTML(dayShows, dateObj) {
+        if (!dayShows || !dayShows.length) return '<div class="no-shows">Ingen film</div>';
+        // unique by movieId
+        const seen = new Set();
+        const dateStr = dateObj.toISOString().split('T')[0];
+        const items = [];
+        for (const s of dayShows) {
+            const mid = s.movieId;
+            if (!seen.has(mid)) {
+                seen.add(mid);
+                const title = s.movie?.title || `Film #${mid}`;
+                items.push(`<div class="show-time" onclick="window.calendarHandlers.openMovieDay(${mid}, '${dateStr}')" title="${title}">${title}</div>`);
+            }
+        }
+        return items.join('') || '<div class="no-shows">Ingen film</div>';
+    }
+
+    async openMovieDay(movieId, dateStr) {
+        try {
+            // Fetch occupied seats for this movie on the selected date
+            const occRes = await fetch(`/api/bookings/occupied?movieId=${encodeURIComponent(movieId)}&date=${encodeURIComponent(dateStr)}`);
+            const occupied = occRes.ok ? await occRes.text() : '0';
+            const occNum = parseInt(occupied || '0');
+
+            const movie = this.calendarManager.shows.find(s => s.movieId === movieId)?.movie;
+            const title = movie?.title || `Film #${movieId}`;
+
+            const html = `
+                <div class="modal-overlay" id="modal-overlay"></div>
+                <div class="modal-box" id="modal-box" style="max-width: 520px;">
+                    <button class="modal-close" id="modal-close" title="Luk">&times;</button>
+                    <div id="modal-content">
+                        <h2>Vælg tidspunkt</h2>
+                        <p><strong>Film:</strong> ${title}</p>
+                        <p><strong>Dato:</strong> ${new Date(dateStr).toLocaleDateString('da-DK')}</p>
+                        <p style="margin-top:0.25rem;"><strong>Optagede sæder i dag:</strong> <span id="occupied-count">${isNaN(occNum)?0:occNum}</span></p>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem;">
+                            <button class="time-btn" data-time="14:00">Kl. 14:00</button>
+                            <button class="time-btn" data-time="17:00">Kl. 17:00</button>
+                            <button class="time-btn" data-time="20:00">Kl. 20:00</button>
+                        </div>
+                        <div id="choose-time-msg" style="margin-top:0.75rem; color:#ccc;"></div>
+                    </div>
+                </div>`;
+
+            ModalManager.showModal(html);
+
+            const onClick = async (e) => {
+                const btn = e.target.closest('.time-btn');
+                if (!btn) return;
+                const hhmm = btn.getAttribute('data-time');
+                const found = await this.findShowForTime(movieId, dateStr, hhmm);
+                if (!found) {
+                    const msg = document.getElementById('choose-time-msg');
+                    if (msg) { msg.textContent = `Ingen forestilling fundet kl. ${hhmm} den valgte dag.`; msg.style.color = 'orange'; }
+                    return;
+                }
+                // proceed to booking flow
+                ModalManager.closeModal();
+                this.bookShow(found.id);
+            };
+            document.getElementById('modal-content').addEventListener('click', onClick);
+        } catch (e) {
+            alert('Kunne ikke åbne tidsvalg.');
+        }
+    }
+
+    async findShowForTime(movieId, dateStr, hhmm) {
+        const toHM = (d) => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const sameDate = (d, dStr) => {
+            const ds = d.toISOString().split('T')[0];
+            return ds === dStr;
+        };
+        // Try from already loaded shows
+        let candidate = this.calendarManager.shows.find(s => {
+            if (s.movieId !== movieId) return false;
+            if (!s.showTime) return false;
+            const dt = new Date(s.showTime);
+            return sameDate(dt, dateStr) && toHM(dt) === hhmm;
+        });
+        if (candidate) return candidate;
+        // Fallback: fetch shows by movie and filter
+        try {
+            const res = await fetch(`/api/shows/movie/${movieId}`);
+            if (res.ok) {
+                const shows = await res.json();
+                candidate = shows.find(s => {
+                    if (!s.showTime) return false;
+                    const dt = new Date(s.showTime);
+                    const t = toHM(dt);
+                    return dt.toISOString().split('T')[0] === dateStr && t === hhmm;
+                });
+                return candidate || null;
+            }
+        } catch (_) {}
+        return null;
     }
 
     openShowDetails(showId) {
