@@ -14,7 +14,6 @@ public class Shift {
 
     @ManyToOne
     @JoinColumn(name = "staff_id")
-    @JsonIgnore // Tilføj denne annotation for at undgå cirkulær reference
     private Staff staff;
 
     private LocalDate shiftDate;

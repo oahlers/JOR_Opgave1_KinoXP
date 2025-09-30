@@ -1,8 +1,11 @@
+import { AuthManager } from './modules/auth.js';
 import { ModalManager } from './modules/modal.js';
 
 class MoviesPage {
     init() {
         document.addEventListener("DOMContentLoaded", () => {
+            AuthManager.setupLoginButtons();
+            AuthManager.checkLoginStatus();
             this.loadMovies();
         });
     }

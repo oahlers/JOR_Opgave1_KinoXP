@@ -206,7 +206,7 @@ class CalendarPage {
         ModalManager.showModal(modalHTML);
     }
 
-    bookShow(showId) {
+    async bookShow(showId) {
         if (!localStorage.getItem('loggedInUser')) {
             alert('Du skal være logget ind for at booke billetter');
             ModalManager.closeModal();
@@ -214,8 +214,170 @@ class CalendarPage {
             return;
         }
 
-        alert(`Booking funktionalitet for show ${showId} vil blive implementeret her`);
-        ModalManager.closeModal();
+        try {
+            // Hent show og kiosk-varer
+            const [showRes, sweetsRes] = await Promise.all([
+                fetch(`/api/shows/${showId}`),
+                fetch('/api/sweets')
+            ]);
+            const show = await showRes.json();
+            const sweets = await sweetsRes.json();
+
+            const ticketPrice = show?.movie?.ticketPrice ?? 0;
+            const movieTitle = show?.movie?.title ?? `Film #${show?.movieId ?? ''}`;
+            const showTime = show?.showTime ? new Date(show.showTime).toLocaleString('da-DK') : '';
+
+            const sweetsRows = sweets.map(s => `
+                <div class="sweet-row" data-id="${s.id}" data-price="${s.price}">
+                    <span>${s.name} (${s.price} DKK)</span>
+                    <input type="number" min="0" value="0" class="sweet-qty" style="width: 60px; text-align: right;">
+                </div>
+            `).join('');
+
+            const html = `
+                <div class="modal-overlay" id="modal-overlay"></div>
+                <div class="modal-box" id="modal-box" style="max-width: 560px;">
+                    <button class="modal-close" id="modal-close" title="Luk">&times;</button>
+                    <div id="modal-content">
+                        <h2>Book billet</h2>
+                        <p><strong>Film:</strong> ${movieTitle}</p>
+                        <p><strong>Dato/tid:</strong> ${showTime}</p>
+                        <p><strong>Billetpris:</strong> <span id="ticket-price">${ticketPrice}</span> DKK</p>
+                        <label for="ticket-count">Antal billetter</label>
+                        <input type="number" id="ticket-count" min="1" value="1" style="width: 80px;">
+
+                        <h3 style="margin-top:1rem;">Kiosk tilkøb</h3>
+                        <div id="sweets-list-booking" style="max-height: 220px; overflow:auto; padding:0.5rem; border:1px solid #444; border-radius:4px;">
+                            ${sweetsRows || '<em>Ingen kioskvarer</em>'}
+                        </div>
+
+                        <div style="margin-top:1rem; display:flex; align-items:center; gap:0.5rem;">
+                            <input type="checkbox" id="pay-cash" />
+                            <label for="pay-cash">Betales kontant ved fremmøde</label>
+                        </div>
+                        <div id="cash-confirm" style="display:none; color:#28a745; margin-top:0.25rem;">Betaling: Kontant ved fremmøde</div>
+
+                        <div style="margin-top:1rem; display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                            <p style="margin:0;"><strong>Total:</strong> <span id="booking-total">${ticketPrice}</span> DKK</p>
+                            <span id="total-note" style="font-size:0.9rem; color:#888;"></span>
+                        </div>
+                        <div style="margin-top:0.75rem; display:flex; gap:0.5rem;">
+                            <button id="confirm-booking">Bekræft booking</button>
+                            <button id="close-booking" style="background:#6c757d;">Luk</button>
+                        </div>
+
+                        <div id="booking-msg" style="margin-top: 0.75rem;"></div>
+                    </div>
+                </div>
+            `;
+
+            ModalManager.showModal(html);
+
+            const recalc = () => {
+                const count = Math.max(1, parseInt(document.getElementById('ticket-count').value || '1'));
+                let total = count * Number(ticketPrice || 0);
+                document.querySelectorAll('#sweets-list-booking .sweet-row').forEach(row => {
+                    const price = Number(row.getAttribute('data-price')) || 0;
+                    const qty = Math.max(0, parseInt(row.querySelector('.sweet-qty').value || '0'));
+                    total += price * qty;
+                });
+                document.getElementById('booking-total').textContent = total.toFixed(2);
+            };
+
+            // Wire up UI
+            document.getElementById('ticket-count').addEventListener('input', recalc);
+            document.querySelectorAll('.sweet-qty').forEach(inp => inp.addEventListener('input', recalc));
+            const cashCheckbox = document.getElementById('pay-cash');
+            const cashConfirm = document.getElementById('cash-confirm');
+            const totalNote = document.getElementById('total-note');
+            const confirmBtn = document.getElementById('confirm-booking');
+            // Require explicit cash confirmation before enabling booking
+            if (confirmBtn) confirmBtn.disabled = true;
+            if (cashCheckbox) {
+                const onCashChange = () => {
+                    const checked = !!cashCheckbox.checked;
+                    cashConfirm.style.display = checked ? 'block' : 'none';
+                    totalNote.textContent = checked ? '(betales kontant ved fremmøde)' : '';
+                    if (confirmBtn) confirmBtn.disabled = !checked;
+                };
+                cashCheckbox.addEventListener('change', onCashChange);
+                onCashChange();
+            }
+            const closeBtn = document.getElementById('close-booking');
+            if (closeBtn) closeBtn.addEventListener('click', () => ModalManager.closeModal());
+            recalc();
+
+            document.getElementById('confirm-booking').addEventListener('click', async () => {
+                const user = JSON.parse(localStorage.getItem('loggedInUser'));
+                const seats = Math.max(1, parseInt(document.getElementById('ticket-count').value || '1'));
+
+                try {
+                    const res = await fetch('/api/bookings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ showId: showId, customerName: user.fullName, seats })
+                    });
+
+                    if (!res.ok) throw new Error('Booking fejlede');
+
+                    document.getElementById('booking-msg').textContent = 'Booking oprettet! Din billet åbnes til print.';
+                    document.getElementById('booking-msg').style.color = 'green';
+
+                    // Generer QR-kode og åbn printvindue direkte (ikke i modal)
+                    const dataStr = `${window.location.origin}/calendar | ${movieTitle} | ${showTime} | ${user.fullName} | ${seats} billetter`;
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(dataStr)}`;
+
+                    const win = window.open('', 'PRINT', 'height=650,width=900');
+                    win.document.write(`
+                        <html>
+                          <head>
+                            <title>Billet</title>
+                            <meta charset="utf-8" />
+                            <style>
+                              body{font-family: Arial, sans-serif; background:#fff; color:#000;}
+                              .ticket{max-width:480px; margin:20px auto; border:1px solid #000; padding:16px;}
+                              .qr{display:block; margin:12px auto;}
+                              h2,h3,p{margin:6px 0;}
+                            </style>
+                          </head>
+                          <body>
+                            <div class="ticket">
+                              <h2>KinoXP Billet</h2>
+                              <p><strong>Film:</strong> ${movieTitle}</p>
+                              <p><strong>Dato/tid:</strong> ${showTime}</p>
+                              <p><strong>Navn:</strong> ${user.fullName}</p>
+                              <p><strong>Antal billetter:</strong> ${seats}</p>
+                              <img id="qr-img" class="qr" src="${qrUrl}" alt="QR kode" />
+                              <p>Vis denne QR kode ved indgangen.</p>
+                            </div>
+                            <script>(function(){
+                              function safePrint(){
+                                try{window.print();}catch(e){}
+                                window.onfocus=function(){setTimeout(()=>window.close(),300)}
+                              }
+                              const img=document.getElementById('qr-img');
+                              if(img){
+                                if(img.complete){ safePrint(); }
+                                else { img.addEventListener('load', safePrint); setTimeout(safePrint, 1500); }
+                              } else {
+                                setTimeout(safePrint, 500);
+                              }
+                            })();<\/script>
+                          </body>
+                        </html>
+                    `);
+                    win.document.close();
+                    win.focus();
+                    // Luk booking-modal når printvindue er åbnet
+                    ModalManager.closeModal();
+                } catch (err) {
+                    document.getElementById('booking-msg').textContent = 'Kunne ikke oprette booking.';
+                    document.getElementById('booking-msg').style.color = 'red';
+                }
+            }, { once: true });
+        } catch (e) {
+            alert('Kunne ikke indlæse bookingdata. Prøv igen.');
+        }
     }
 
     showError() {

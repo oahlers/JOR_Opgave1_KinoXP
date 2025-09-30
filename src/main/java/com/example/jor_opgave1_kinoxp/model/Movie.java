@@ -3,6 +3,7 @@ package com.example.jor_opgave1_kinoxp.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "movie")
@@ -26,6 +27,9 @@ public class Movie {
 
     @Column(name = "theater_id")
     private Long theaterId;
+
+    @Column(name = "ticket_price")
+    private BigDecimal ticketPrice;
 
     // Getters og setters...
     public Long getId() {
@@ -98,5 +102,13 @@ public class Movie {
 
     public void setTheaterId(Long theaterId) {
         this.theaterId = theaterId;
+    }
+
+    public BigDecimal getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void setTicketPrice(BigDecimal ticketPrice) {
+        this.ticketPrice = ticketPrice;
     }
 }

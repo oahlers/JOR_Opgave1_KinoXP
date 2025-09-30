@@ -25,4 +25,9 @@ public class PageController {
     public String staff() {
         return "staff.html";
     }
+
+    @GetMapping("/my-bookings")
+    public String myBookings() {
+        return "my-bookings.html";
+    }
 }

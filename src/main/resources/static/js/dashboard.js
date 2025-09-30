@@ -51,6 +51,7 @@ class DashboardPage {
                 <p><strong>Aldersgrænse:</strong> ${movie.ageLimit}+</p>
                 <p><strong>Varighed:</strong> ${movie.duration} min.</p>
                 <p><strong>Skuespillere:</strong> ${movie.actors}</p>
+                ${movie.ticketPrice != null ? `<p><strong>Billetpris:</strong> ${movie.ticketPrice} DKK</p>` : ''}
                 ${showInfo}
                 <div style="margin-top: 1rem;">
                     <button onclick="window.location.href='/calendar'">Se forestillinger</button>

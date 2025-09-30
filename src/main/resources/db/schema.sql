@@ -63,15 +63,16 @@ CREATE TABLE movie (
                        duration INT,
                        first_show_date DATE,
                        show_days INT,
-                       theater_id INT
+                       theater_id INT,
+                       ticket_price DECIMAL(6,2)
 );
 
-INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id) VALUES
-                                                                                                             ('Inception', 'Sci-Fi', 12, 'Leonardo DiCaprio, Marion Cotillard', 148, '2025-02-01', 7, 1),
-                                                                                                             ('The Dark Knight', 'Action', 15, 'Christian Bale, Heath Ledger', 152, '2025-02-01', 14, 2),
-                                                                                                             ('Pulp Fiction', 'Crime', 18, 'John Travolta, Uma Thurman', 154, '2025-02-01', 10, 1),
-                                                                                                             ('The Matrix', 'Sci-Fi', 15, 'Keanu Reeves, Laurence Fishburne', 136, '2025-02-03', 10, 2),
-                                                                                                             ('Forrest Gump', 'Drama', 11, 'Tom Hanks, Robin Wright', 142, '2025-02-04', 14, 1);
+INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id, ticket_price) VALUES
+                                                                                                              ('Inception', 'Sci-Fi', 12, 'Leonardo DiCaprio, Marion Cotillard', 148, '2025-02-01', 7, 1, 95.00),
+                                                                                                              ('The Dark Knight', 'Action', 15, 'Christian Bale, Heath Ledger', 152, '2025-02-01', 14, 2, 110.00),
+                                                                                                              ('Pulp Fiction', 'Crime', 18, 'John Travolta, Uma Thurman', 154, '2025-02-01', 10, 1, 100.00),
+                                                                                                              ('The Matrix', 'Sci-Fi', 15, 'Keanu Reeves, Laurence Fishburne', 136, '2025-02-03', 10, 2, 95.00),
+                                                                                                              ('Forrest Gump', 'Drama', 11, 'Tom Hanks, Robin Wright', 142, '2025-02-04', 14, 1, 90.00);
 
 -- Forestillinger
 DROP TABLE IF EXISTS shows;
@@ -185,6 +186,6 @@ INSERT INTO sweets (name, price) VALUES
                                      ('Mineralvand', 12.00);
 
 -- Tilføj nye film for at teste kalenderen
-INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id) VALUES
-                                                                                                             ('Interstellar', 'Sci-Fi', 12, 'Matthew McConaughey, Anne Hathaway', 169, '2025-02-06', 10, 1),
-                                                                                                             ('The Godfather', 'Crime', 18, 'Marlon Brando, Al Pacino', 175, '2025-02-07', 14, 2);
+INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id, ticket_price) VALUES
+                                                                                                              ('Interstellar', 'Sci-Fi', 12, 'Matthew McConaughey, Anne Hathaway', 169, '2025-02-06', 10, 1, 105.00),
+                                                                                                              ('The Godfather', 'Crime', 18, 'Marlon Brando, Al Pacino', 175, '2025-02-07', 14, 2, 120.00);

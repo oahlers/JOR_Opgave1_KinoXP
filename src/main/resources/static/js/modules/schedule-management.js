@@ -1,4 +1,5 @@
 // Schedule management functionality
+import { ModalManager } from './modal.js';
 export class ScheduleManager {
     constructor() {
         this.currentDate = new Date();
@@ -185,12 +186,11 @@ export class ScheduleManager {
                             ${staffOptions}
                         </select>
                         <input type="date" id="shift-date" value="${isEdit ? shift.shiftDate : (date || new Date().toISOString().split('T')[0])}" required>
-                        <input type="time" id="shift-start" value="${isEdit ? shift.startTime : '09:00'}" required>
-                        <input type="time" id="shift-end" value="${isEdit ? shift.endTime : '17:00'}" required>
-                        <select id="shift-type">
-                            <option value="Morning" ${isEdit && shift.shiftType === 'Morning' ? 'selected' : ''}>Morgen</option>
-                            <option value="Evening" ${isEdit && shift.shiftType === 'Evening' ? 'selected' : ''}>Aften</option>
-                            <option value="Night" ${isEdit && shift.shiftType === 'Night' ? 'selected' : ''}>Nat</option>
+                        <label for="shift-type">Vagttype</label>
+                        <select id="shift-type" required>
+                            <option value="13-23">13-23 (10 timer)</option>
+                            <option value="13-18">13-18 (5 timer)</option>
+                            <option value="18-23">18-23 (5 timer)</option>
                         </select>
                         <button type="submit">${isEdit ? 'Opdater Vagt' : 'Tilføj Vagt'}</button>
                     </form>
@@ -201,22 +201,30 @@ export class ScheduleManager {
 
         ModalManager.showModal(modalHTML);
 
+        // Preselect shift type in edit mode based on existing times
+        if (isEdit && shift.startTime && shift.endTime) {
+            const pair = `${shift.startTime.substring(0,5)}-${shift.endTime.substring(0,5)}`;
+            const sel = document.getElementById("shift-type");
+            if (sel) sel.value = pair;
+        }
+
         document.getElementById("shift-form").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const startTime = document.getElementById("shift-start").value;
-            const endTime = document.getElementById("shift-end").value;
-
-            const start = new Date(`2000-01-01T${startTime}`);
-            const end = new Date(`2000-01-01T${endTime}`);
-            const hours = (end - start) / (1000 * 60 * 60);
+            const type = document.getElementById("shift-type").value; // '13-23' | '13-18' | '18-23'
+            let startTime = '13:00';
+            let endTime = '23:00';
+            let hours = 10;
+            let typeName = 'Day';
+            if (type === '13-18') { endTime = '18:00'; hours = 5; typeName = 'Half Day'; }
+            if (type === '18-23') { startTime = '18:00'; endTime = '23:00'; hours = 5; typeName = 'Evening'; }
 
             const shiftData = {
                 staff: { id: parseInt(document.getElementById("shift-staff").value) },
                 shiftDate: document.getElementById("shift-date").value,
                 startTime: startTime,
                 endTime: endTime,
-                shiftType: document.getElementById("shift-type").value,
+                shiftType: typeName,
                 hours: hours
             };
 

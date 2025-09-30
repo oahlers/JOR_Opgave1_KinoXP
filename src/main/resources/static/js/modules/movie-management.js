@@ -1,4 +1,5 @@
 // Movie management functionality
+import { ModalManager } from './modal.js';
 export class MovieManager {
     static async loadMovies() {
         try {
@@ -38,20 +39,31 @@ export class MovieManager {
 
         const modalHTML = `
             <div class="modal-overlay" id="modal-overlay"></div>
-            <div class="modal-box" id="modal-box" style="max-width: 500px;">
+            <div class="modal-box" id="modal-box" style="max-width: 560px;">
                 <button class="modal-close" id="modal-close">&times;</button>
                 <div id="modal-content">
                     <h2>${isEdit ? 'Rediger Film' : 'Tilføj Ny Film'}</h2>
                     <form id="movie-form">
                         <input type="text" id="movie-title" placeholder="Titel" value="${isEdit ? movie.title : ''}" required>
-                        <input type="text" id="movie-category" placeholder="Kategori" value="${isEdit ? movie.category : ''}" required>
-                        <input type="number" id="movie-age-limit" placeholder="Aldersgrænse" value="${isEdit ? movie.ageLimit : ''}" required>
+                        <select id="movie-category" required>
+                            <option value="">Vælg genre</option>
+                            ${['Action','Adventure','Animation','Comedy','Crime','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Thriller','Documentary'].map(g => `<option value="${g}" ${isEdit && movie.category === g ? 'selected' : ''}>${g}</option>`).join('')}
+                        </select>
+                        <select id="movie-age-limit" required>
+                            ${[0,7,11,12,15,18].map(a => `<option value="${a}" ${isEdit && Number(movie.ageLimit)===a ? 'selected' : ''}>Aldersgrænse: ${a}+</option>`).join('')}
+                        </select>
                         <input type="number" id="movie-duration" placeholder="Varighed (minutter)" value="${isEdit ? movie.duration : ''}" required>
                         <textarea id="movie-actors" placeholder="Skuespillere" required>${isEdit ? movie.actors : ''}</textarea>
+                        <label for="movie-first-date">Første visningsdato</label>
+                        <input type="date" id="movie-first-date" value="${isEdit && movie.firstShowDate ? movie.firstShowDate : ''}" required>
+                        <label for="movie-show-days">Antal dage filmen vises</label>
+                        <input type="number" id="movie-show-days" min="1" max="90" value="${isEdit ? movie.showDays : 7}" required>
+                        <label for="movie-ticket-price">Billetpris (DKK)</label>
+                        <input type="number" id="movie-ticket-price" step="0.5" min="0" value="${isEdit && movie.ticketPrice != null ? movie.ticketPrice : ''}" required>
                         <select id="movie-theater" required>
                             <option value="">Vælg teater</option>
-                            <option value="1" ${isEdit && movie.theaterId === 1 ? 'selected' : ''}>Small Theater</option>
-                            <option value="2" ${isEdit && movie.theaterId === 2 ? 'selected' : ''}>Large Theater</option>
+                            <option value="1" ${isEdit && Number(movie.theaterId) === 1 ? 'selected' : ''}>Small Theater</option>
+                            <option value="2" ${isEdit && Number(movie.theaterId) === 2 ? 'selected' : ''}>Large Theater</option>
                         </select>
                         <button type="submit">${isEdit ? 'Opdater Film' : 'Tilføj Film'}</button>
                     </form>
@@ -71,6 +83,9 @@ export class MovieManager {
                 ageLimit: parseInt(document.getElementById("movie-age-limit").value),
                 duration: parseInt(document.getElementById("movie-duration").value),
                 actors: document.getElementById("movie-actors").value,
+                firstShowDate: document.getElementById("movie-first-date").value,
+                showDays: parseInt(document.getElementById("movie-show-days").value),
+                ticketPrice: parseFloat(document.getElementById("movie-ticket-price").value),
                 theaterId: parseInt(document.getElementById("movie-theater").value)
             };
 

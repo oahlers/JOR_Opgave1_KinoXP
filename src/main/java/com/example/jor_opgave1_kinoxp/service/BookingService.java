@@ -54,4 +54,11 @@ public class BookingService {
     public List<Booking> searchBookingsByCustomer(String customerName) {
         return bookingRepository.findByCustomerName(customerName);
     }
+
+    public Booking rescheduleBooking(Long bookingId, Long newShowId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        Show newShow = showRepository.findById(newShowId).orElseThrow();
+        booking.setShow(newShow);
+        return bookingRepository.save(booking);
+    }
 }
