@@ -58,6 +58,30 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
         } catch (Exception e) {
             System.err.println("[StartupMigration] Could not ensure bookings.user_id column/FK: " + e.getMessage());
         }
+
+        // Ensure booking_sweets junction table exists with FKs to bookings and sweets
+        try {
+            Integer tableCnt = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'booking_sweets'",
+                    Integer.class,
+                    getSchemaName()
+            );
+            if (tableCnt == null || tableCnt == 0) {
+                jdbcTemplate.execute(
+                        "CREATE TABLE IF NOT EXISTS booking_sweets (" +
+                                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                                "booking_id INT NOT NULL, " +
+                                "sweet_id INT NOT NULL, " +
+                                "quantity INT NOT NULL DEFAULT 1, " +
+                                "price_each DECIMAL(5,2) NOT NULL, " +
+                                "CONSTRAINT fk_bs_booking FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE, " +
+                                "CONSTRAINT fk_bs_sweet FOREIGN KEY (sweet_id) REFERENCES sweets(id)" +
+                                ")"
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("[StartupMigration] Could not ensure booking_sweets table: " + e.getMessage());
+        }
     }
 
     // Extract the schema (database) name from the JDBC URL if possible; fallback to default kinoXP

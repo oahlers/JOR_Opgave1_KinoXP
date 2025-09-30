@@ -114,3 +114,15 @@ CREATE TABLE sweets (
 );
 INSERT INTO sweets (name, price) VALUES
 ('Popcorn', 45.00);
+
+-- Junction table to bind sweets to bookings (order lines)
+DROP TABLE IF EXISTS booking_sweets;
+CREATE TABLE booking_sweets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    sweet_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    price_each DECIMAL(5,2) NOT NULL,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    FOREIGN KEY (sweet_id) REFERENCES sweets(id)
+);

@@ -5,6 +5,7 @@ class DashboardPage {
     constructor(){
         this.movies = [];
         this.filters = { genre: 'Alle', age: 'Alle' };
+        this.nextShowByMovie = new Map();
         this.setupGlobalHandlers();
     }
     setupGlobalHandlers(){
@@ -12,6 +13,73 @@ class DashboardPage {
             openMovieInfo: (id) => this.openMovieInfo(id),
             goToShows: () => { window.location.href = '/calendar'; }
         };
+    }
+
+    async loadUpcomingShows(){
+        try {
+            const start = new Date();
+            const end = new Date();
+            end.setMonth(end.getMonth() + 3);
+            const qs = `?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`;
+            const res = await fetch(`/api/shows/between${qs}`);
+            if (!res.ok) return;
+            const shows = await res.json();
+            const now = new Date();
+            this.nextShowByMovie.clear();
+            for (const s of shows) {
+                if (!s || !s.movieId || !s.showTime) continue;
+                const st = new Date(s.showTime);
+                if (st < now) continue;
+                const existing = this.nextShowByMovie.get(s.movieId);
+                if (!existing || st < existing) {
+                    this.nextShowByMovie.set(s.movieId, st);
+                }
+            }
+        } catch (e) {
+            console.warn('Could not load upcoming shows', e);
+        }
+    }
+
+    renderFeatured(){
+        const container = document.getElementById('featured-movies');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!this.movies || this.movies.length === 0) return;
+
+        // Sort movies by next upcoming showtime; movies without upcoming shows go to the end
+        const moviesWithSortKey = this.movies.map(m => ({
+            movie: m,
+            next: this.nextShowByMovie.get(m.id) || null
+        })).sort((a,b) => {
+            if (a.next && b.next) return a.next - b.next;
+            if (a.next && !b.next) return -1;
+            if (!a.next && b.next) return 1;
+            return 0;
+        });
+
+        const topFive = moviesWithSortKey.slice(0,5);
+        for (const entry of topFive) {
+            const m = entry.movie;
+            const img = document.createElement('img');
+            img.className = 'movie-thumb';
+            img.alt = m.title || 'Film';
+            img.style.cursor = 'pointer';
+            if (m.imageUrl) {
+                img.src = m.imageUrl;
+                img.onerror = function(){ this.style.display = 'none'; };
+            }
+            img.addEventListener('click', () => this.openMovieInfo(m.id));
+            // Wrap in a simple div to keep spacing consistent
+            const wrap = document.createElement('div');
+            wrap.style.textAlign = 'center';
+            wrap.appendChild(img);
+            // Optionally show title under image
+            const title = document.createElement('div');
+            title.textContent = m.title;
+            title.style.marginTop = '0.25rem';
+            wrap.appendChild(title);
+            container.appendChild(wrap);
+        }
     }
     async init() {
         document.addEventListener("DOMContentLoaded", () => {
@@ -25,6 +93,8 @@ class DashboardPage {
         try {
             const response = await fetch('/api/movies');
             this.movies = await response.json();
+            await this.loadUpcomingShows();
+            this.renderFeatured();
             this.renderFilters();
             this.applyFiltersAndRender();
         } catch (error) {
@@ -90,7 +160,9 @@ class DashboardPage {
             movieCard.className = 'card';
             movieCard.style.marginBottom = '1rem';
 
-            const imgHtml = movie.imageUrl ? `<img src="${movie.imageUrl}" alt="${movie.title}" class="movie-thumb" onerror="this.style.display='none'">` : '';
+            const imgHtml = movie.imageUrl 
+                ? `<img src="${movie.imageUrl}" alt="${movie.title}" class="movie-thumb" onerror="this.style.display='none'" onclick="window.dashboardHandlers.openMovieInfo(${movie.id})" style="cursor:pointer;">`
+                : '';
 
             movieCard.innerHTML = `
                 ${imgHtml}
