@@ -64,7 +64,8 @@ CREATE TABLE movie (
                        first_show_date DATE,
                        show_days INT,
                        theater_id INT,
-                       ticket_price DECIMAL(6,2)
+                       ticket_price DECIMAL(6,2),
+                       image_url VARCHAR(255)
 );
 
 INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id, ticket_price) VALUES

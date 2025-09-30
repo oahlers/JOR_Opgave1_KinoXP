@@ -56,6 +56,8 @@ public class MovieService {
         movie.setFirstShowDate(updatedMovie.getFirstShowDate());
         movie.setShowDays(updatedMovie.getShowDays());
         movie.setTheaterId(updatedMovie.getTheaterId());
+        movie.setTicketPrice(updatedMovie.getTicketPrice());
+        movie.setImageUrl(updatedMovie.getImageUrl());
 
         // Slet eksisterende shows og generer nye
         if (updatedMovie.getFirstShowDate() != null && updatedMovie.getShowDays() > 0) {

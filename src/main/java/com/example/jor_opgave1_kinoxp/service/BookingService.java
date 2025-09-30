@@ -6,7 +6,9 @@ import com.example.jor_opgave1_kinoxp.repository.BookingRepository;
 import com.example.jor_opgave1_kinoxp.repository.ShowRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -60,5 +62,12 @@ public class BookingService {
         Show newShow = showRepository.findById(newShowId).orElseThrow();
         booking.setShow(newShow);
         return bookingRepository.save(booking);
+    }
+
+    public int occupiedSeatsForMovieOnDate(Long movieId, LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX);
+        Integer sum = bookingRepository.sumSeatsByMovieAndShowTimeBetween(movieId, start, end);
+        return sum != null ? sum : 0;
     }
 }

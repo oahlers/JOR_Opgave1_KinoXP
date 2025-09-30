@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mine Bookinger - KinoXP</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header>
+    <h1>KinoXP</h1>
+    <nav>
+        <a href="/">Hjem</a>
+        <a href="/calendar">Film Kalender</a>
+        <div id="login-buttons" style="margin-left: auto;">
+            <button id="customer-login-btn">Kunde Login</button>
+            <button id="staff-login-btn" style="margin-left: 0.5rem;">Medarbejder Login</button>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="card">
+        <h2>Mine Bookinger</h2>
+        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+            <input id="search-input" type="text" placeholder="Søg i dine bookinger..." style="flex: 1;">
+            <button id="refresh-btn">Opdater</button>
+        </div>
+        <div id="bookings-list"></div>
+        <div id="empty-state" style="display:none; color: #666;">Ingen bookinger fundet.</div>
+    </section>
+</main>
+
+<footer>
+    &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
+</footer>
+
+<script type="module" src="/js/my-bookings.js"></script>
+</body>
+</html>
