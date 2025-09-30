@@ -1,4 +1,5 @@
 // Authentication module - genanvendelig login/logout funktionalitet
+import { ModalManager } from './modal.js';
 export class AuthManager {
     static checkLoginStatus() {
         const loggedInUser = localStorage.getItem('loggedInUser');
@@ -47,6 +48,9 @@ export class AuthManager {
     static setupLoginButtons() {
         const customerBtn = document.getElementById("customer-login-btn");
         const staffBtn = document.getElementById("staff-login-btn");
+
+        // React to login state changes dispatched by ModalManager
+        window.addEventListener('user-login-changed', AuthManager.checkLoginStatus);
 
         if (customerBtn) {
             customerBtn.addEventListener("click", () => {

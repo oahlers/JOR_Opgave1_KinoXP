@@ -3,6 +3,7 @@ import { ModalManager } from './modules/modal.js';
 import { MovieManager } from './modules/movie-management.js';
 import { StaffManager } from './modules/staff-management.js';
 import { ScheduleManager } from './modules/schedule-management.js';
+import { SweetsManager } from './modules/sweets-management.js';
 
 class StaffPage {
     constructor() {
@@ -15,6 +16,7 @@ class StaffPage {
         window.MovieManager = MovieManager;
         window.StaffManager = StaffManager;
         window.scheduleManager = this.scheduleManager;
+        window.SweetsManager = SweetsManager;
     }
 
     init() {
@@ -41,6 +43,11 @@ class StaffPage {
             this.scheduleManager.loadSchedule();
         });
 
+        document.getElementById('manage-kiosk-btn').addEventListener('click', () => {
+            this.toggleSection('kiosk-section');
+            SweetsManager.loadSweets();
+        });
+
         document.getElementById('add-movie-btn').addEventListener('click', () => {
             MovieManager.openMovieForm();
         });
@@ -52,16 +59,22 @@ class StaffPage {
         document.getElementById('add-shift-btn').addEventListener('click', () => {
             this.scheduleManager.openShiftForm();
         });
+
+        document.getElementById('add-sweet-btn').addEventListener('click', () => {
+            SweetsManager.openSweetForm();
+        });
     }
 
     toggleSection(sectionId) {
         const moviesSection = document.getElementById('movies-section');
         const staffSection = document.getElementById('staff-section');
         const scheduleSection = document.getElementById('schedule-section');
+        const kioskSection = document.getElementById('kiosk-section');
 
         moviesSection.style.display = 'none';
         staffSection.style.display = 'none';
         scheduleSection.style.display = 'none';
+        kioskSection.style.display = 'none';
 
         document.getElementById(sectionId).style.display = 'block';
     }
