@@ -31,6 +31,33 @@ public class DatabaseMigrationRunner implements ApplicationRunner {
             // Log and continue; we don't want startup to fail due to this optional migration
             System.err.println("[StartupMigration] Could not ensure movie.image_url column: " + e.getMessage());
         }
+
+        // Ensure bookings.user_id exists and has FK to users(id)
+        try {
+            Integer colCnt = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'user_id'",
+                    Integer.class,
+                    getSchemaName()
+            );
+            if (colCnt == null || colCnt == 0) {
+                jdbcTemplate.execute("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS user_id INT NULL");
+            }
+            // Check if FK exists
+            Integer fkCnt = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'user_id' AND REFERENCED_TABLE_NAME = 'users'",
+                    Integer.class,
+                    getSchemaName()
+            );
+            if (fkCnt == null || fkCnt == 0) {
+                try {
+                    jdbcTemplate.execute("ALTER TABLE bookings ADD CONSTRAINT fk_bookings_user FOREIGN KEY (user_id) REFERENCES users(id)");
+                } catch (Exception e2) {
+                    System.err.println("[StartupMigration] Could not add FK bookings.user_id -> users.id: " + e2.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[StartupMigration] Could not ensure bookings.user_id column/FK: " + e.getMessage());
+        }
     }
 
     // Extract the schema (database) name from the JDBC URL if possible; fallback to default kinoXP

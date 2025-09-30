@@ -5,12 +5,19 @@ class DashboardPage {
     constructor(){
         this.movies = [];
         this.filters = { genre: 'Alle', age: 'Alle' };
+        this.setupGlobalHandlers();
+    }
+    setupGlobalHandlers(){
+        window.dashboardHandlers = {
+            openMovieInfo: (id) => this.openMovieInfo(id),
+            goToShows: () => { window.location.href = '/calendar'; }
+        };
     }
     async init() {
         document.addEventListener("DOMContentLoaded", () => {
+            AuthManager.setupLoginButtons();
             AuthManager.checkLoginStatus();
             this.loadMovies();
-            AuthManager.setupLoginButtons();
         });
     }
 
@@ -83,34 +90,57 @@ class DashboardPage {
             movieCard.className = 'card';
             movieCard.style.marginBottom = '1rem';
 
-            let showInfo = '';
-            if (movie.firstShowDate && movie.showDays) {
-                const firstShow = new Date(movie.firstShowDate);
-                const lastShow = new Date(firstShow);
-                lastShow.setDate(firstShow.getDate() + Math.min(movie.showDays, 90));
-                showInfo = `
-                    <p><strong>Første visning:</strong> ${firstShow.toLocaleDateString('da-DK')}</p>
-                    <p><strong>Vises til:</strong> ${lastShow.toLocaleDateString('da-DK')}</p>
-                `;
-            }
-
             const imgHtml = movie.imageUrl ? `<img src="${movie.imageUrl}" alt="${movie.title}" class="movie-thumb" onerror="this.style.display='none'">` : '';
 
             movieCard.innerHTML = `
                 ${imgHtml}
                 <h3>${movie.title}</h3>
-                <p><strong>Kategori:</strong> ${movie.category}</p>
-                <p><strong>Aldersgrænse:</strong> ${movie.ageLimit}+</p>
-                <p><strong>Varighed:</strong> ${movie.duration} min.</p>
-                <p><strong>Skuespillere:</strong> ${movie.actors}</p>
-                ${movie.ticketPrice != null ? `<p><strong>Billetpris:</strong> ${movie.ticketPrice} DKK</p>` : ''}
-                ${showInfo}
-                <div style="margin-top: 1rem;">
-                    <button onclick="window.location.href='/calendar'">Se forestillinger</button>
+                <div style="margin-top: 0.75rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+                    <button onclick="window.dashboardHandlers.openMovieInfo(${movie.id})">Vis mere information</button>
+                    <button onclick="window.dashboardHandlers.goToShows()" style="background:#333;">Se forestillinger</button>
                 </div>
             `;
             moviesList.appendChild(movieCard);
         });
+    }
+
+    openMovieInfo(id){
+        const movie = this.movies.find(m => String(m.id) === String(id));
+        if (!movie) return;
+        let showInfo = '';
+        if (movie.firstShowDate && movie.showDays) {
+            const firstShow = new Date(movie.firstShowDate);
+            const lastShow = new Date(firstShow);
+            lastShow.setDate(firstShow.getDate() + Math.min(movie.showDays, 90));
+            showInfo = `
+                <p><strong>Første visning:</strong> ${firstShow.toLocaleDateString('da-DK')}</p>
+                <p><strong>Vises til:</strong> ${lastShow.toLocaleDateString('da-DK')}</p>
+            `;
+        }
+        const price = movie.ticketPrice != null ? `<p><strong>Billetpris:</strong> ${movie.ticketPrice} DKK</p>` : '';
+        const imgHtml = movie.imageUrl ? `<img src="${movie.imageUrl}" alt="${movie.title}" class="movie-thumb" onerror="this.style.display='none'">` : '';
+        const html = `
+            <div class="modal-overlay" id="modal-overlay"></div>
+            <div class="modal-box" id="modal-box" style="max-width:560px;">
+                <button class="modal-close" id="modal-close" title="Luk">&times;</button>
+                <div id="modal-content">
+                    ${imgHtml}
+                    <h2 style="text-align:center;">${movie.title}</h2>
+                    <p><strong>Kategori:</strong> ${movie.category}</p>
+                    <p><strong>Aldersgrænse:</strong> ${movie.ageLimit}+</p>
+                    <p><strong>Varighed:</strong> ${movie.duration} min.</p>
+                    <p><strong>Skuespillere:</strong> ${movie.actors}</p>
+                    ${price}
+                    ${showInfo}
+                    <div style="margin-top:0.75rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+                        <button onclick="window.dashboardHandlers.goToShows()">Se forestillinger</button>
+                        <button id="close-info" style="background:#6c757d;">Luk</button>
+                    </div>
+                </div>
+            </div>`;
+        ModalManager.showModal(html);
+        const btn = document.getElementById('close-info');
+        if (btn) btn.addEventListener('click', () => ModalManager.closeModal());
     }
 }
 
