@@ -11,21 +11,28 @@
     <h1>KinoXP</h1>
     <nav>
         <a href="/">Hjem</a>
-        <a href="/movies">Film</a>
-        <a href="/calendar">Film Kalender</a>
+        <a href="/calendar" class="active">Kalender</a>
+        <div id="login-buttons" style="margin-left: auto;">
+            <button id="customer-login-btn">Kunde Login</button>
+            <button id="staff-login-btn" style="margin-left: 0.5rem;">Medarbejder Login</button>
+        </div>
     </nav>
 </header>
 
-<main>
+<div class="main-content">
+    <div class="main-content-container">
     <section class="card">
         <h2>Kommende Forestillinger</h2>
         <p>Kalender indlæses...</p>
     </section>
-</main>
+
 
 <footer>
     &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
 </footer>
+
+    </div>
+</div>
 
 <script src="/js/calendar.js"></script>
 </body>

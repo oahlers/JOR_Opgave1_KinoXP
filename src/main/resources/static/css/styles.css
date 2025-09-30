@@ -12,7 +12,6 @@ body {
 header {
     background: #1c1c1c;
     padding: 1rem;
-    border-bottom: 2px solid #e50914;
     position: relative;
 }
 
@@ -41,7 +40,13 @@ nav a {
 }
 
 nav a:hover {
+    color: rgba(112, 8, 8, 1);
+}
+
+nav a.active {
+    font-weight: bold;
     color: #e50914;
+    border-bottom: 2px solid #e6e6e6;
 }
 
 /* === User Welcome in Header === */
@@ -73,12 +78,16 @@ nav a:hover {
 }
 
 #logout-btn:hover {
-    background: #e50914;
+    background: rgba(112, 8, 8, 1);
     color: #fff;
 }
 
 /* === Main Content === */
-main {
+.main-content {
+    background: radial-gradient(circle,rgba(112, 8, 8, 1) 0%, rgba(36, 36, 36, 1) 100%);
+}
+
+.main-content-container {
     padding: 2rem;
     max-width: 1200px;
     margin: auto;
@@ -147,7 +156,7 @@ button {
 }
 
 button:hover {
-    background: #ff1f27;
+    background: rgba(112, 8, 8, 1);
 }
 
 button:disabled {
@@ -161,6 +170,11 @@ button:disabled {
     border-radius: 6px;
     padding: 1.5rem;
     margin: 1rem 0;
+    text-align: center;
+}
+
+.welcome-card {
+    text-align: center;
 }
 
 .card h3 {
@@ -169,10 +183,8 @@ button:disabled {
 }
 
 footer {
-    background: #1c1c1c;
     text-align: center;
     padding: 1rem;
-    border-top: 2px solid #e50914;
     margin-top: 2rem;
     font-size: 0.9rem;
     color: #aaa;
@@ -400,11 +412,6 @@ footer {
         transform: none;
         justify-content: center;
         margin-top: 0.5rem;
-    }
-
-    main {
-        padding: 1rem;
-        max-width: 100%;
     }
 
     .modal-box {
