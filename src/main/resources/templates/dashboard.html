@@ -6,12 +6,13 @@
     <title>Forside - KinoXP</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
 <header>
     <h1>KinoXP</h1>
     <nav>
-        <a href="/">Hjem</a>
-        <a href="/calendar">Film Kalender</a>
+        <a href="/" class="active">Hjem</a>
+        <a href="/calendar">Kalender</a>
         <div id="login-buttons" style="margin-left: auto;">
             <button id="customer-login-btn">Kunde Login</button>
             <button id="staff-login-btn" style="margin-left: 0.5rem;">Medarbejder Login</button>
@@ -19,22 +20,26 @@
     </nav>
 </header>
 
-<main>
-    <section class="card">
-        <h2>Velkommen til KinoXP</h2>
-        <p>Din lokale biograf for en førsteklasses filmoplevelse!</p>
-        <p>Se vores filmudvalg og book billetter til kommende forestillinger.</p>
-    </section>
+<div class="main-content">
+    <div class="main-content-container">
+        <section class="card">
+            <div class="welcome-card">
+            <h2>Velkommen til KinoXP</h2>
+            <p>Din lokale biograf for en førsteklasses filmoplevelse!</p>
+            <p>Se vores filmudvalg og book billetter til kommende forestillinger.</p>
+            </div>
+        </section>
 
-    <section id="movies-overview" class="card">
-        <h2>Kommende Film</h2>
-        <div id="movies-list"></div>
-    </section>
-</main>
+        <section id="movies-overview" class="card">
+            <h2>Kommende Film</h2>
+            <div id="movies-list"></div>
+        </section>
 
-<footer>
-    &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
-</footer>
+        <footer>
+            &copy; 2025 KinoXP. Alle rettigheder forbeholdes.
+        </footer>
+    </div>
+</div>
 
 <script type="module" src="/js/dashboard.js"></script>
 </body>
