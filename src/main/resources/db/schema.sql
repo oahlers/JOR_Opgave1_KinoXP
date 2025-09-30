@@ -3,7 +3,6 @@ DROP DATABASE IF EXISTS kinoXP;
 CREATE DATABASE kinoXP;
 USE kinoXP;
 
--- Brugere (bruger telefonnummer som login)
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -12,11 +11,10 @@ CREATE TABLE users (
     full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE
 );
--- Kun én test-kunde
+
 INSERT INTO users (phonenumber, password, full_name, email) VALUES
 ('11111111', 'test', 'Test Kunde', 'test@example.com');
 
--- Biograf (kun én teatersal)
 DROP TABLE IF EXISTS theaters;
 CREATE TABLE theaters (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,12 +22,12 @@ CREATE TABLE theaters (
     num_rows INT,
     seats_per_row INT
 );
+
 INSERT INTO theaters (name, num_rows, seats_per_row) VALUES
 ('Lille sal', 20, 12),
 ('Store sal', 25, 16);
 
 
--- Film (med billede-url og billetpris)
 DROP TABLE IF EXISTS movie;
 CREATE TABLE movie (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -44,11 +42,10 @@ CREATE TABLE movie (
     ticket_price DECIMAL(6,2),
     image_url VARCHAR(255)
 );
--- Kun én film
+
 INSERT INTO movie (title, category, age_limit, actors, duration, first_show_date, show_days, theater_id, ticket_price, image_url) VALUES
 ('Inception', 'Sci-Fi', 12, 'Leonardo DiCaprio, Marion Cotillard', 148, '2025-02-01', 3, 1, 95.00, NULL);
 
--- Forestillinger (3 tider for den ene film)
 DROP TABLE IF EXISTS shows;
 CREATE TABLE shows (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -63,7 +60,6 @@ INSERT INTO shows (movie_id, theater_id, show_time) VALUES
 (1, 1, '2025-02-01 17:00:00'),
 (1, 1, '2025-02-01 20:00:00');
 
--- Booking (tilføj user_id som FK til users)
 DROP TABLE IF EXISTS bookings;
 CREATE TABLE bookings (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,11 +71,10 @@ CREATE TABLE bookings (
     FOREIGN KEY (show_id) REFERENCES shows(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
--- Kun én booking, knyttet til test-kunden
+
 INSERT INTO bookings (show_id, customer_name, seats, user_id) VALUES
 (1, 'Test Kunde', 2, 1);
 
--- Personale (kun én medarbejder)
 DROP TABLE IF EXISTS staff;
 CREATE TABLE staff (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -92,7 +87,6 @@ CREATE TABLE staff (
 INSERT INTO staff (username, password, full_name, position, total_hours) VALUES
 ('staff', 'staff123', 'Test Medarbejder', 'Ticket & Sales', 0.0);
 
--- Vagtplan (eksempel med én vagt og gyldige tider)
 DROP TABLE IF EXISTS shifts;
 CREATE TABLE shifts (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -112,7 +106,6 @@ CREATE TABLE shifts (
 INSERT INTO shifts (staff_id, shift_date, start_time, end_time, shift_type, hours) VALUES
 (1, '2025-02-01', '13:00:00', '18:00:00', 'Half Day', 5.0);
 
--- Slik (kun én vare)
 DROP TABLE IF EXISTS sweets;
 CREATE TABLE sweets (
     id INT AUTO_INCREMENT PRIMARY KEY,
