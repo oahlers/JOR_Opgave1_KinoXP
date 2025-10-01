@@ -22,7 +22,6 @@ public class Shift {
     private String shiftType;
     private Double hours;
 
-    // Getters og setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

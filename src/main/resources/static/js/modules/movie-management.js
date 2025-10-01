@@ -1,4 +1,3 @@
-// Movie management functionality
 import { ModalManager } from './modal.js';
 export class MovieManager {
     static async loadMovies() {
@@ -63,9 +62,9 @@ export class MovieManager {
                         <label for="movie-image-url">Billede URL</label>
                         <input type="url" id="movie-image-url" placeholder="https://..." value="${isEdit && movie.imageUrl ? movie.imageUrl : ''}">
                         <select id="movie-theater" required>
-                            <option value="">Vælg teater</option>
-                            <option value="1" ${isEdit && Number(movie.theaterId) === 1 ? 'selected' : ''}>Small Theater</option>
-                            <option value="2" ${isEdit && Number(movie.theaterId) === 2 ? 'selected' : ''}>Large Theater</option>
+                            <option value="">Vælg sal</option>
+                            <option value="1" ${isEdit && Number(movie.theaterId) === 1 ? 'selected' : ''}>Lille sal</option>
+                            <option value="2" ${isEdit && Number(movie.theaterId) === 2 ? 'selected' : ''}>Store sal</option>
                         </select>
                         <button type="submit">${isEdit ? 'Opdater Film' : 'Tilføj Film'}</button>
                     </form>
@@ -112,10 +111,16 @@ export class MovieManager {
                         this.loadMovies();
                     }, 1500);
                 } else {
-                    throw new Error('Fejl ved gemning');
+                    let serverMsg = '';
+                    try { serverMsg = await response.text(); } catch (_) {}
+                    let msg = serverMsg && serverMsg.trim().length > 0 ? serverMsg : 'Fejl ved gemning af film';
+                    if (response.status === 409 || response.status === 400 || response.status === 500 || /booket|periode|dato/i.test(serverMsg)) {
+                        msg = 'Kan ikke gemme filmen: Den kan ikke ligge på samme dato som en film der allerede vises i den sal.';
+                    }
+                    throw new Error(msg);
                 }
             } catch (error) {
-                document.getElementById("movie-form-message").textContent = 'Fejl ved gemning af film';
+                document.getElementById("movie-form-message").textContent = error?.message || 'Fejl ved gemning af film';
                 document.getElementById("movie-form-message").style.color = "red";
             }
         });

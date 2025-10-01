@@ -115,7 +115,6 @@ CREATE TABLE sweets (
 INSERT INTO sweets (name, price) VALUES
 ('Popcorn', 45.00);
 
--- Junction table to bind sweets to bookings (order lines)
 DROP TABLE IF EXISTS booking_sweets;
 CREATE TABLE booking_sweets (
     id INT AUTO_INCREMENT PRIMARY KEY,

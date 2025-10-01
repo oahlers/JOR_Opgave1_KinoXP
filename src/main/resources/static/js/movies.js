@@ -108,6 +108,5 @@ class MoviesPage {
     }
 }
 
-// Initialize the movies page
 const moviesPage = new MoviesPage();
 moviesPage.init();

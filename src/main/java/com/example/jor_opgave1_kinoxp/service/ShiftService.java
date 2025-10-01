@@ -18,10 +18,9 @@ public class ShiftService {
 
     public List<Shift> getAllShifts() {
         List<Shift> shifts = shiftRepository.findAll();
-        // Trigger lazy loading for staff
         shifts.forEach(shift -> {
             if (shift.getStaff() != null) {
-                shift.getStaff().getFullName(); // Kun hent nødvendige felter
+                shift.getStaff().getFullName();
             }
         });
         return shifts;
@@ -35,7 +34,7 @@ public class ShiftService {
         List<Shift> shifts = shiftRepository.findByShiftDate(date);
         shifts.forEach(shift -> {
             if (shift.getStaff() != null) {
-                shift.getStaff().getFullName(); // Kun hent nødvendige felter
+                shift.getStaff().getFullName();
             }
         });
         return shifts;
@@ -45,7 +44,7 @@ public class ShiftService {
         List<Shift> shifts = shiftRepository.findByShiftDateBetween(start, end);
         shifts.forEach(shift -> {
             if (shift.getStaff() != null) {
-                shift.getStaff().getFullName(); // Kun hent nødvendige felter
+                shift.getStaff().getFullName();
             }
         });
         return shifts;

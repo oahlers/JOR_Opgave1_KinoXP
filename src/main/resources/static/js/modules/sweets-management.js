@@ -1,4 +1,3 @@
-// Sweets (kiosk) management functionality
 import { ModalManager } from './modal.js';
 
 export class SweetsManager {

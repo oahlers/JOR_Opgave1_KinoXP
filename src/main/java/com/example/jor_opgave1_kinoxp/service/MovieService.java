@@ -35,8 +35,15 @@ public class MovieService {
     public Movie createMovie(Movie movie) {
         Movie savedMovie = movieRepository.save(movie);
 
-        // Generer shows hvis firstShowDate og showDays er sat
-        if (movie.getFirstShowDate() != null && movie.getShowDays() > 0) {
+        if (movie.getFirstShowDate() != null && movie.getShowDays() > 0 && movie.getTheaterId() != null) {
+            LocalDate start = movie.getFirstShowDate();
+            LocalDate end = start.plusDays(movie.getShowDays() - 1);
+            LocalDateTime startDateTime = start.atStartOfDay();
+            LocalDateTime endDateTime = end.atTime(23, 59, 59, 999_000_000);
+            Long conflicts = showRepository.countConflictsForTheaterBetweenExcludingMovie(movie.getTheaterId(), startDateTime, endDateTime, savedMovie.getId());
+            if (conflicts != null && conflicts > 0) {
+                throw new RuntimeException("Teatret er allerede booket af en anden film i den valgte periode.");
+            }
             generateShowsForMovie(savedMovie);
         }
 
@@ -59,8 +66,15 @@ public class MovieService {
         movie.setTicketPrice(updatedMovie.getTicketPrice());
         movie.setImageUrl(updatedMovie.getImageUrl());
 
-        // Slet eksisterende shows og generer nye
-        if (updatedMovie.getFirstShowDate() != null && updatedMovie.getShowDays() > 0) {
+        if (updatedMovie.getFirstShowDate() != null && updatedMovie.getShowDays() > 0 && updatedMovie.getTheaterId() != null) {
+            LocalDate start = updatedMovie.getFirstShowDate();
+            LocalDate end = start.plusDays(updatedMovie.getShowDays() - 1);
+            LocalDateTime startDateTime = start.atStartOfDay();
+            LocalDateTime endDateTime = end.atTime(23, 59, 59, 999_000_000);
+            Long conflicts = showRepository.countConflictsForTheaterBetweenExcludingMovie(updatedMovie.getTheaterId(), startDateTime, endDateTime, id);
+            if (conflicts != null && conflicts > 0) {
+                throw new RuntimeException("Teatret er allerede booket af en anden film i den valgte periode.");
+            }
             showRepository.deleteByMovieId(id);
             generateShowsForMovie(movie);
         }
@@ -70,9 +84,7 @@ public class MovieService {
 
     @Transactional
     public void deleteMovie(Long id) {
-        // Slet først alle tilknyttede shows
         showRepository.deleteByMovieId(id);
-        // Slet derefter filmen
         movieRepository.deleteById(id);
     }
 
@@ -84,11 +96,10 @@ public class MovieService {
         System.out.println("From: " + currentDate + " to: " + endDate);
         System.out.println("Theater: " + movie.getTheaterId());
 
-        // Standard show-tider for alle film
         LocalTime[] showTimes = {
-                LocalTime.of(14, 0),  // 14:00
-                LocalTime.of(17, 0),  // 17:00
-                LocalTime.of(20, 0)   // 20:00
+                LocalTime.of(14, 0),
+                LocalTime.of(17, 0),
+                LocalTime.of(20, 0)
         };
 
         int showCount = 0;

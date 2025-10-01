@@ -28,9 +28,11 @@ class CalendarPage {
 
     async loadCalendar() {
         try {
-            const startDate = new Date();
+            const now = new Date();
+            const startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
             const endDate = new Date();
             endDate.setMonth(endDate.getMonth() + 3);
+            endDate.setHours(23,59,59,999);
 
             await this.calendarManager.loadShows(startDate, endDate);
             this.displayCalendar();
@@ -129,11 +131,17 @@ class CalendarPage {
         });
     }
 
+    formatLocalYMD(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
     generateMovieTitlesHTML(dayShows, dateObj) {
         if (!dayShows || !dayShows.length) return '<div class="no-shows">Ingen film</div>';
-        // unique by movieId
         const seen = new Set();
-        const dateStr = dateObj.toISOString().split('T')[0];
+        const dateStr = this.formatLocalYMD(dateObj);
         const items = [];
         for (const s of dayShows) {
             const mid = s.movieId;
@@ -148,27 +156,38 @@ class CalendarPage {
 
     async openMovieDay(movieId, dateStr) {
         try {
-            // Fetch occupied seats for this movie on the selected date
-            const occRes = await fetch(`/api/bookings/occupied?movieId=${encodeURIComponent(movieId)}&date=${encodeURIComponent(dateStr)}`);
-            const occupied = occRes.ok ? await occRes.text() : '0';
-            const occNum = parseInt(occupied || '0');
+            const showsForDay = this.calendarManager.shows.filter(s => {
+                if (s.movieId !== movieId) return false;
+                const ds = this.formatLocalYMD(new Date(s.showTime));
+                return ds === dateStr;
+            }).sort((a,b) => new Date(a.showTime) - new Date(b.showTime));
 
-            const movie = this.calendarManager.shows.find(s => s.movieId === movieId)?.movie;
+            const movie = showsForDay[0]?.movie || this.calendarManager.shows.find(s => s.movieId === movieId)?.movie;
             const title = movie?.title || `Film #${movieId}`;
+
+            const itemsHtml = await Promise.all(showsForDay.map(async (s) => {
+                const time = new Date(s.showTime).toLocaleTimeString('da-DK', {hour:'2-digit', minute:'2-digit'});
+                const theaterName = s.theater?.name || `Sal ${s.theaterId}`;
+                const total = (s.theater?.numRows || 0) * (s.theater?.seatsPerRow || 0);
+                let occupied = 0;
+                try {
+                    const r = await fetch(`/api/bookings/occupied-by-show?showId=${encodeURIComponent(s.id)}`);
+                    occupied = r.ok ? parseInt(await r.text() || '0') : 0;
+                } catch (_) { occupied = 0; }
+                const occText = total > 0 ? `${occupied} / ${total}` : `${occupied}`;
+                return `<button class="time-btn" data-showid="${s.id}" title="${theaterName} • ${occText}">${time} • ${theaterName} • ${occText}</button>`;
+            }));
 
             const html = `
                 <div class="modal-overlay" id="modal-overlay"></div>
-                <div class="modal-box" id="modal-box" style="max-width: 520px;">
+                <div class="modal-box" id="modal-box" style="max-width: 620px;">
                     <button class="modal-close" id="modal-close" title="Luk">&times;</button>
                     <div id="modal-content">
                         <h2>Vælg tidspunkt</h2>
                         <p><strong>Film:</strong> ${title}</p>
                         <p><strong>Dato:</strong> ${new Date(dateStr).toLocaleDateString('da-DK')}</p>
-                        <p style="margin-top:0.25rem;"><strong>Optagede sæder i dag:</strong> <span id="occupied-count">${isNaN(occNum)?0:occNum}</span></p>
                         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem;">
-                            <button class="time-btn" data-time="14:00">Kl. 14:00</button>
-                            <button class="time-btn" data-time="17:00">Kl. 17:00</button>
-                            <button class="time-btn" data-time="20:00">Kl. 20:00</button>
+                            ${itemsHtml.join('') || '<span style="color:#bbb;">Ingen ledige tider</span>'}
                         </div>
                         <div id="choose-time-msg" style="margin-top:0.75rem; color:#ccc;"></div>
                     </div>
@@ -179,16 +198,10 @@ class CalendarPage {
             const onClick = async (e) => {
                 const btn = e.target.closest('.time-btn');
                 if (!btn) return;
-                const hhmm = btn.getAttribute('data-time');
-                const found = await this.findShowForTime(movieId, dateStr, hhmm);
-                if (!found) {
-                    const msg = document.getElementById('choose-time-msg');
-                    if (msg) { msg.textContent = `Ingen forestilling fundet kl. ${hhmm} den valgte dag.`; msg.style.color = 'orange'; }
-                    return;
-                }
-                // proceed to booking flow
+                const showId = btn.getAttribute('data-showid');
+                if (!showId) return;
                 ModalManager.closeModal();
-                this.bookShow(found.id);
+                this.bookShow(parseInt(showId));
             };
             document.getElementById('modal-content').addEventListener('click', onClick);
         } catch (e) {
@@ -199,10 +212,9 @@ class CalendarPage {
     async findShowForTime(movieId, dateStr, hhmm) {
         const toHM = (d) => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         const sameDate = (d, dStr) => {
-            const ds = d.toISOString().split('T')[0];
+            const ds = this.formatLocalYMD(d);
             return ds === dStr;
         };
-        // Try from already loaded shows
         let candidate = this.calendarManager.shows.find(s => {
             if (s.movieId !== movieId) return false;
             if (!s.showTime) return false;
@@ -210,7 +222,6 @@ class CalendarPage {
             return sameDate(dt, dateStr) && toHM(dt) === hhmm;
         });
         if (candidate) return candidate;
-        // Fallback: fetch shows by movie and filter
         try {
             const res = await fetch(`/api/shows/movie/${movieId}`);
             if (res.ok) {
@@ -219,7 +230,7 @@ class CalendarPage {
                     if (!s.showTime) return false;
                     const dt = new Date(s.showTime);
                     const t = toHM(dt);
-                    return dt.toISOString().split('T')[0] === dateStr && t === hhmm;
+                    return this.formatLocalYMD(dt) === dateStr && t === hhmm;
                 });
                 return candidate || null;
             }
@@ -314,7 +325,6 @@ class CalendarPage {
         }
 
         try {
-            // Hent show og kiosk-varer
             const [showRes, sweetsRes] = await Promise.all([
                 fetch(`/api/shows/${showId}`),
                 fetch('/api/sweets')
@@ -383,14 +393,12 @@ class CalendarPage {
                 document.getElementById('booking-total').textContent = total.toFixed(2);
             };
 
-            // Wire up UI
             document.getElementById('ticket-count').addEventListener('input', recalc);
             document.querySelectorAll('.sweet-qty').forEach(inp => inp.addEventListener('input', recalc));
             const cashCheckbox = document.getElementById('pay-cash');
             const cashConfirm = document.getElementById('cash-confirm');
             const totalNote = document.getElementById('total-note');
             const confirmBtn = document.getElementById('confirm-booking');
-            // Require explicit cash confirmation before enabling booking
             if (confirmBtn) confirmBtn.disabled = true;
             if (cashCheckbox) {
                 const onCashChange = () => {
@@ -422,7 +430,6 @@ class CalendarPage {
                     document.getElementById('booking-msg').textContent = 'Booking oprettet! Din billet åbnes til print.';
                     document.getElementById('booking-msg').style.color = 'green';
 
-                    // Generer QR-kode og åbn printvindue direkte (ikke i modal)
                     const dataStr = `${window.location.origin}/calendar | ${movieTitle} | ${showTime} | ${user.fullName} | ${seats} billetter`;
                     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(dataStr)}`;
 
@@ -467,7 +474,6 @@ class CalendarPage {
                     `);
                     win.document.close();
                     win.focus();
-                    // Luk booking-modal når printvindue er åbnet
                     ModalManager.closeModal();
                 } catch (err) {
                     document.getElementById('booking-msg').textContent = 'Kunne ikke oprette booking.';
@@ -488,6 +494,5 @@ class CalendarPage {
     }
 }
 
-// Initialize the calendar page
 const calendarPage = new CalendarPage();
 calendarPage.init();

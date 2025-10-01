@@ -1,4 +1,3 @@
-// Staff management functionality
 import { ModalManager } from './modal.js';
 export class StaffManager {
     static async loadStaff() {

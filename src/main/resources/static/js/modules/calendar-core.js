@@ -1,4 +1,3 @@
-// Core calendar functionality
 export class CalendarManager {
     constructor() {
         this.currentDate = new Date();

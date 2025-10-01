@@ -46,7 +46,6 @@ class DashboardPage {
         container.innerHTML = '';
         if (!this.movies || this.movies.length === 0) return;
 
-        // Sort movies by next upcoming showtime; movies without upcoming shows go to the end
         const moviesWithSortKey = this.movies.map(m => ({
             movie: m,
             next: this.nextShowByMovie.get(m.id) || null
@@ -69,11 +68,9 @@ class DashboardPage {
                 img.onerror = function(){ this.style.display = 'none'; };
             }
             img.addEventListener('click', () => this.openMovieInfo(m.id));
-            // Wrap in a simple div to keep spacing consistent
             const wrap = document.createElement('div');
             wrap.style.textAlign = 'center';
             wrap.appendChild(img);
-            // Optionally show title under image
             const title = document.createElement('div');
             title.textContent = m.title;
             title.style.marginTop = '0.25rem';
@@ -216,6 +213,5 @@ class DashboardPage {
     }
 }
 
-// Initialize the dashboard page
 const dashboardPage = new DashboardPage();
 dashboardPage.init();

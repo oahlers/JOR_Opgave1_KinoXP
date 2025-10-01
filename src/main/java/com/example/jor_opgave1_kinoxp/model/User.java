@@ -20,7 +20,6 @@ public class User {
 
     private String email;
 
-    // Getters og setters
     public Long getId() {
         return id;
     }

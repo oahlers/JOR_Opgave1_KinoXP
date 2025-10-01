@@ -14,8 +14,13 @@ public class Booking {
     private Show show;
 
     private String customerName;
+
     private int seats;
     private LocalDateTime bookingTime = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Long getId() {
         return id;
@@ -55,5 +60,13 @@ public class Booking {
 
     public void setBookingTime(LocalDateTime bookingTime) {
         this.bookingTime = bookingTime;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -1,4 +1,3 @@
-// Modal management module
 export class ModalManager {
     static showModal(html) {
         document.body.insertAdjacentHTML("beforeend", html);
@@ -10,7 +9,6 @@ export class ModalManager {
         const modal = document.getElementById("modal-box");
         if (overlay) overlay.remove();
         if (modal) modal.remove();
-        // Remove delegated listeners if present
         if (this._delegatedHandler) {
             document.removeEventListener('click', this._delegatedHandler, true);
             document.removeEventListener('keydown', this._delegatedHandler, true);
@@ -25,12 +23,10 @@ export class ModalManager {
         const isLocked = (overlay && overlay.getAttribute('data-locked') === 'true') || (modalBox && modalBox.getAttribute('data-locked') === 'true');
         const allowCloseButton = modalBox && modalBox.getAttribute('data-allow-close-button') === 'true';
 
-        // Primary bindings
         if (!isLocked) {
             if (closeBtn) closeBtn.addEventListener("click", this.closeModal);
             if (overlay) overlay.addEventListener("click", this.closeModal);
         } else {
-            // Locked: keep overlay non-clickable, but optionally allow explicit close button
             if (closeBtn) {
                 if (allowCloseButton) {
                     closeBtn.disabled = false;
@@ -43,12 +39,10 @@ export class ModalManager {
             }
         }
 
-        // Resilient fallback via event delegation (handles late DOM changes)
         const delegatedHandler = (e) => {
             const t = e.target;
             if (!t) return;
             if (t.id === 'modal-overlay' || t.id === 'modal-close') {
-                // If locked and not allowed via close button, ignore overlay clicks
                 if (isLocked && t.id === 'modal-overlay') return;
                 ModalManager.closeModal();
             }
@@ -56,7 +50,6 @@ export class ModalManager {
                 if (!isLocked) ModalManager.closeModal();
             }
         };
-        // store to remove later
         this._delegatedHandler = delegatedHandler;
         document.addEventListener('click', delegatedHandler, true);
         document.addEventListener('keydown', delegatedHandler, true);
@@ -147,7 +140,6 @@ export class ModalManager {
                     document.getElementById("login-error").textContent = "";
                     localStorage.setItem('loggedInUser', JSON.stringify(user));
                     this.closeModal();
-                    // Notify listeners (e.g., AuthManager) without direct import to avoid circular deps
                     window.dispatchEvent(new Event('user-login-changed'));
                 } else {
                     document.getElementById("login-error").textContent = "Forkert telefonnummer eller adgangskode.";
@@ -164,7 +156,6 @@ export class ModalManager {
             e.preventDefault();
             const form = e.target;
 
-            // Validate passwords match
             if (form.password.value !== form.password2.value) {
                 const msg = document.getElementById("register-msg");
                 msg.textContent = "Adgangskoderne matcher ikke.";

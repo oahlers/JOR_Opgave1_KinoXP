@@ -1,4 +1,3 @@
-// Authentication module - genanvendelig login/logout funktionalitet
 import { ModalManager } from './modal.js';
 export class AuthManager {
     static checkLoginStatus() {
@@ -60,7 +59,6 @@ export class AuthManager {
 
     static logoutStaff() {
         localStorage.removeItem('loggedInStaff');
-        // If on staff page, go home; otherwise simple reload
         if (window.location.pathname.startsWith('/staff')) {
             window.location.href = '/';
         } else {
@@ -72,7 +70,6 @@ export class AuthManager {
         const customerBtn = document.getElementById("customer-login-btn");
         const staffBtn = document.getElementById("staff-login-btn");
 
-        // React to login state changes dispatched by ModalManager
         window.addEventListener('user-login-changed', AuthManager.checkLoginStatus);
 
         if (customerBtn) {

@@ -71,7 +71,6 @@ function renderBookings(bookings) {
         list.appendChild(item);
     });
 
-    // delegate clicks (use stable handler, not once)
     list.onclick = async (e) => {
         const btn = e.target.closest('button[data-action]');
         if (!btn) return;
@@ -247,8 +246,6 @@ function init() {
 
     const user = getLoggedInUser();
     if (!user) {
-        // keep page but prompt login
-        // handled by navbar login
     }
 
     setupSearch();

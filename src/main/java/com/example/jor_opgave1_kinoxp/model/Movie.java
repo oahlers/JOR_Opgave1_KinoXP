@@ -34,7 +34,6 @@ public class Movie {
     @Column(name = "image_url")
     private String imageUrl;
 
-    // Getters og setters...
     public Long getId() {
         return id;
     }

@@ -12,7 +12,6 @@ class StaffPage {
     }
 
     setupGlobalHandlers() {
-        // Make managers available globally for onclick handlers
         window.MovieManager = MovieManager;
         window.StaffManager = StaffManager;
         window.scheduleManager = this.scheduleManager;
@@ -80,6 +79,5 @@ class StaffPage {
     }
 }
 
-// Initialize the staff page
 const staffPage = new StaffPage();
 staffPage.init();

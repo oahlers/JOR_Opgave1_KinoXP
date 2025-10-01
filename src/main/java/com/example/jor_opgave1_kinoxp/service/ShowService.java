@@ -17,54 +17,71 @@ public class ShowService {
         this.showRepository = showRepository;
     }
 
-    // Find alle shows
     public List<Show> getAllShows() {
         return showRepository.findAll();
     }
 
-    // Find show by ID
     public Optional<Show> getShowById(Long id) {
         return showRepository.findById(id);
     }
 
-    // Find shows mellem to datoer
     public List<Show> findByShowTimeBetween(LocalDateTime start, LocalDateTime end) {
         return showRepository.findByShowTimeBetween(start, end);
     }
 
-    // Find shows for en specifik film
+    public List<Show> findWithDetailsBetween(LocalDateTime start, LocalDateTime end) {
+        return showRepository.findShowsWithDetailsBetween(start, end);
+    }
+
     public List<Show> findByMovieId(Long movieId) {
         return showRepository.findByMovieId(movieId);
     }
 
-    // Find shows for et specifikt teater
     public List<Show> findByTheaterId(Long theaterId) {
         return showRepository.findByTheaterId(theaterId);
     }
 
-    // Opret nyt show
     public Show createShow(Show show) {
+        if (show.getTheaterId() != null && show.getShowTime() != null && show.getMovieId() != null) {
+            LocalDateTime startOfDay = show.getShowTime().toLocalDate().atStartOfDay();
+            LocalDateTime endOfDay = show.getShowTime().toLocalDate().atTime(23,59,59,999000000);
+            List<Show> conflicts = showRepository.findConflictsForTheaterAndDate(show.getTheaterId(), startOfDay, endOfDay, show.getMovieId());
+            if (!conflicts.isEmpty()) {
+                throw new RuntimeException("Teatret er allerede booket til en anden film på denne dato.");
+            }
+        }
         return showRepository.save(show);
     }
 
-    // Opdater eksisterende show
     public Show updateShow(Long id, Show updatedShow) {
         Show show = showRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Show ikke fundet med id: " + id));
 
-        show.setMovieId(updatedShow.getMovieId());
-        show.setTheaterId(updatedShow.getTheaterId());
-        show.setShowTime(updatedShow.getShowTime());
+        Long targetMovieId = updatedShow.getMovieId();
+        Long targetTheaterId = updatedShow.getTheaterId();
+        LocalDateTime targetShowTime = updatedShow.getShowTime();
+
+        if (targetTheaterId != null && targetShowTime != null && targetMovieId != null) {
+            LocalDateTime startOfDay = targetShowTime.toLocalDate().atStartOfDay();
+            LocalDateTime endOfDay = targetShowTime.toLocalDate().atTime(23,59,59,999000000);
+            List<Show> conflicts = showRepository.findConflictsForTheaterAndDate(targetTheaterId, startOfDay, endOfDay, targetMovieId);
+            conflicts.removeIf(s -> s.getId().equals(id));
+            if (!conflicts.isEmpty()) {
+                throw new RuntimeException("Teatret er allerede booket til en anden film på denne dato.");
+            }
+        }
+
+        show.setMovieId(targetMovieId);
+        show.setTheaterId(targetTheaterId);
+        show.setShowTime(targetShowTime);
 
         return showRepository.save(show);
     }
 
-    // Slet show
     public void deleteShow(Long id) {
         showRepository.deleteById(id);
     }
 
-    // Set movie på et show
     public Show setMovie(Long showId, Long movieId) {
         Show show = showRepository.findById(showId)
                 .orElseThrow(() -> new RuntimeException("Show ikke fundet med id: " + showId));
@@ -72,7 +89,6 @@ public class ShowService {
         return showRepository.save(show);
     }
 
-    // Set theater på et show
     public Show setTheater(Long showId, Long theaterId) {
         Show show = showRepository.findById(showId)
                 .orElseThrow(() -> new RuntimeException("Show ikke fundet med id: " + showId));
@@ -80,16 +96,11 @@ public class ShowService {
         return showRepository.save(show);
     }
 
-    // Tjek om teater er tilgængeligt på et givent tidspunkt
     public boolean isTheaterAvailable(Long theaterId, LocalDateTime showTime, Long excludeShowId) {
-        // Find alle shows for dette teater på samme tid
         List<Show> conflictingShows = showRepository.findByTheaterIdAndShowTime(theaterId, showTime);
-
-        // Filtrer ud excludeShowId hvis det er en opdatering
         if (excludeShowId != null) {
             conflictingShows.removeIf(show -> show.getId().equals(excludeShowId));
         }
-
         return conflictingShows.isEmpty();
     }
 }

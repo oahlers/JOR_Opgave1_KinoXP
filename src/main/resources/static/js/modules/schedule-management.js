@@ -1,4 +1,3 @@
-// Schedule management functionality
 import { ModalManager } from './modal.js';
 export class ScheduleManager {
     constructor() {
@@ -201,7 +200,6 @@ export class ScheduleManager {
 
         ModalManager.showModal(modalHTML);
 
-        // Preselect shift type in edit mode based on existing times
         if (isEdit && shift.startTime && shift.endTime) {
             const pair = `${shift.startTime.substring(0,5)}-${shift.endTime.substring(0,5)}`;
             const sel = document.getElementById("shift-type");
@@ -211,7 +209,7 @@ export class ScheduleManager {
         document.getElementById("shift-form").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const type = document.getElementById("shift-type").value; // '13-23' | '13-18' | '18-23'
+            const type = document.getElementById("shift-type").value;
             let startTime = '13:00';
             let endTime = '23:00';
             let hours = 10;

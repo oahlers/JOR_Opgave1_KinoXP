@@ -18,14 +18,13 @@ public class StaffService {
 
     public List<Staff> getAllStaff() {
         List<Staff> staffList = staffRepository.findAll();
-        // Sørg for at shifts ikke loades lazy
-        staffList.forEach(staff -> staff.getShifts().size()); // Trigger lazy loading
+        staffList.forEach(staff -> staff.getShifts().size());
         return staffList;
     }
 
     public Staff getStaffById(Long id) {
         Staff staff = staffRepository.findById(id).orElseThrow();
-        staff.getShifts().size(); // Trigger lazy loading
+        staff.getShifts().size();
         return staff;
     }
 
@@ -53,7 +52,6 @@ public class StaffService {
 
         if (staffOpt.isPresent()) {
             Staff staff = staffOpt.get();
-            // Returner en "clean" version uden shifts for login
             if (staff.getPassword().equals(password)) {
                 Staff cleanStaff = new Staff();
                 cleanStaff.setId(staff.getId());
@@ -61,7 +59,6 @@ public class StaffService {
                 cleanStaff.setFullName(staff.getFullName());
                 cleanStaff.setPosition(staff.getPosition());
                 cleanStaff.setTotalHours(staff.getTotalHours());
-                // Undlad at sætte shifts og password
                 return Optional.of(cleanStaff);
             }
         }

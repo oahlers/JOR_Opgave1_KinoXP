@@ -16,19 +16,16 @@ public class Show {
     private Long theaterId;
     private LocalDateTime showTime;
 
-    // Many-to-one relation til Movie
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movieId", insertable = false, updatable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Movie movie;
 
-    // Many-to-one relation til Theater
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theaterId", insertable = false, updatable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Theater theater;
 
-    // Getters og setters...
     public Long getId() {
         return id;
     }

@@ -33,7 +33,7 @@ public class ShowController {
     public List<Show> getShowsBetween(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        return showService.findByShowTimeBetween(start, end);
+        return showService.findWithDetailsBetween(start, end);
     }
 
     @GetMapping("/movie/{movieId}")
