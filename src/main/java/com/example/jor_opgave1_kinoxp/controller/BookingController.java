@@ -22,11 +22,6 @@ public class BookingController {
         return bookingService.getAllBookings();
     }
 
-    @GetMapping("/by-customer")
-    public List<Booking> getByCustomer(@RequestParam("name") String customerName) {
-        return bookingService.searchBookingsByCustomer(customerName);
-    }
-
     @GetMapping("/by-user")
     public List<Booking> getByUser(@RequestParam("userId") Long userId) {
         return bookingService.findByUserId(userId);
@@ -45,7 +40,7 @@ public class BookingController {
 
     @PostMapping
     public Booking create(@RequestBody CreateBookingRequest req) {
-        return bookingService.createBooking(req.getShowId(), req.getCustomerName(), req.getSeats(), req.getUserId());
+        return bookingService.createBooking(req.getShowId(), req.getSeats(), req.getUserId());
     }
 
     @DeleteMapping("/{id}")
@@ -77,14 +72,11 @@ public class BookingController {
 
     public static class CreateBookingRequest {
         private Long showId;
-        private String customerName;
         private int seats;
         private Long userId;
 
         public Long getShowId() { return showId; }
         public void setShowId(Long showId) { this.showId = showId; }
-        public String getCustomerName() { return customerName; }
-        public void setCustomerName(String customerName) { this.customerName = customerName; }
         public int getSeats() { return seats; }
         public void setSeats(int seats) { this.seats = seats; }
         public Long getUserId() { return userId; }

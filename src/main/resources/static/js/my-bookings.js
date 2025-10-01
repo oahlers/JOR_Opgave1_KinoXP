@@ -6,8 +6,8 @@ function getLoggedInUser() {
     return u ? JSON.parse(u) : null;
 }
 
-async function fetchMyBookings(fullName) {
-    const res = await fetch(`/api/bookings/by-customer?name=${encodeURIComponent(fullName)}`);
+async function fetchMyBookingsByUser(userId) {
+    const res = await fetch(`/api/bookings/by-user?userId=${encodeURIComponent(userId)}`);
     if (!res.ok) throw new Error('Kunne ikke hente bookinger');
     return await res.json();
 }
@@ -102,7 +102,7 @@ function openTicketPrint(booking) {
     const movieTitle = booking.show?.movie?.title ?? `Film #${booking.show?.movieId ?? ''}`;
     const showTime = booking.show?.showTime ? formatDateTime(booking.show.showTime) : '';
     const seats = booking.seats || 1;
-    const fullName = booking.customerName || user?.fullName || '';
+    const fullName = (booking.user && booking.user.fullName) ? booking.user.fullName : (user?.fullName || '');
 
     const dataStr = `${window.location.origin}/calendar | ${movieTitle} | ${showTime} | ${fullName} | ${seats} billetter`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(dataStr)}`;
@@ -229,7 +229,7 @@ async function loadAndRender() {
         window.location.href = '/';
         return;
     }
-    const bookings = await fetchMyBookings(user.fullName);
+    const bookings = await fetchMyBookingsByUser(user.id);
     currentBookings = bookings;
     const q = document.getElementById('search-input').value.toLowerCase();
     const filtered = q ? bookings.filter(b => {

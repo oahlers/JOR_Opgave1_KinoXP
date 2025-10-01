@@ -46,43 +46,30 @@ public class BookingService {
         return bookingRepository.findById(id).orElseThrow();
     }
 
-    public Booking createBooking(Long showId, String customerName, int seats) {
-        return createBooking(showId, customerName, seats, null);
-    }
-
-    public Booking createBooking(Long showId, String customerName, int seats, Long userId) {
+    public Booking createBooking(Long showId, int seats, Long userId) {
         Show show = showRepository.findById(showId).orElseThrow();
 
         Booking booking = new Booking();
         booking.setShow(show);
-        booking.setCustomerName(customerName);
         booking.setSeats(seats);
         booking.setBookingTime(LocalDateTime.now());
 
         if (userId != null) {
             User user = userRepository.findById(userId).orElseThrow();
             booking.setUser(user);
-            if (customerName == null || customerName.isBlank()) {
-                booking.setCustomerName(user.getFullName());
-            }
         }
 
         return bookingRepository.save(booking);
     }
 
-    public Booking updateBooking(Long id, String customerName, int seats) {
+    public Booking updateSeats(Long id, int seats) {
         Booking booking = bookingRepository.findById(id).orElseThrow();
-        booking.setCustomerName(customerName);
         booking.setSeats(seats);
         return bookingRepository.save(booking);
     }
 
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
-    }
-
-    public List<Booking> searchBookingsByCustomer(String customerName) {
-        return bookingRepository.findByCustomerName(customerName);
     }
 
     public List<Booking> findByUserId(Long userId) {
