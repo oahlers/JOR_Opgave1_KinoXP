@@ -113,10 +113,8 @@ export class MovieManager {
                 } else {
                     let serverMsg = '';
                     try { serverMsg = await response.text(); } catch (_) {}
-                    let msg = serverMsg && serverMsg.trim().length > 0 ? serverMsg : 'Fejl ved gemning af film';
-                    if (response.status === 409 || response.status === 400 || response.status === 500 || /booket|periode|dato/i.test(serverMsg)) {
-                        msg = 'Kan ikke gemme filmen: Den kan ikke ligge på samme dato som en film der allerede vises i den sal.';
-                    }
+                    const trimmed = (serverMsg || '').trim();
+                    const msg = trimmed.length > 0 ? trimmed : 'Fejl ved gemning af film';
                     throw new Error(msg);
                 }
             } catch (error) {
