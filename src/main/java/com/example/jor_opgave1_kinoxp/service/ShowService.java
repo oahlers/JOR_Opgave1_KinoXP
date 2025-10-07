@@ -96,11 +96,4 @@ public class ShowService {
         return showRepository.save(show);
     }
 
-    public boolean isTheaterAvailable(Long theaterId, LocalDateTime showTime, Long excludeShowId) {
-        List<Show> conflictingShows = showRepository.findByTheaterIdAndShowTime(theaterId, showTime);
-        if (excludeShowId != null) {
-            conflictingShows.removeIf(show -> show.getId().equals(excludeShowId));
-        }
-        return conflictingShows.isEmpty();
-    }
 }

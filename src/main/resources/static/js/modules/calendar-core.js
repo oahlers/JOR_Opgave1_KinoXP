@@ -4,6 +4,11 @@ export class CalendarManager {
         this.shows = [];
     }
 
+    // calendar.js og calendar-core.js er delt op da den side vi er på nu er en hjælpe vil til calendar.js
+    // herinde funktioner til indlæsning af data og visning af kalenderen loaded, så calendar.js nemt kan hente funktionerne
+    // Det er opdelt da calendar.js er en lang fil, netop fordi den primært står for UI- og præsentationslaget
+
+    // Henter data fra API kald
     async loadShows(startDate, endDate) {
         try {
             const response = await fetch(`/api/shows/between?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
@@ -13,7 +18,7 @@ export class CalendarManager {
             this.shows = await response.json();
             return this.shows;
         } catch (error) {
-            console.error('Error loading shows:', error);
+            console.error('Fejl ved at hente forestillinger:', error);
             throw error;
         }
     }
@@ -37,62 +42,5 @@ export class CalendarManager {
             'Juli', 'August', 'September', 'Oktober', 'November', 'December'
         ];
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
-    }
-
-    generateShowsHTML(dayShows) {
-        if (dayShows.length === 0) {
-            return '<div class="no-shows">Ingen forestillinger</div>';
-        }
-
-        const showsByMovieAndTheater = {};
-        dayShows.forEach(show => {
-            const movieTitle = show.movie ? show.movie.title : 'Ukendt film';
-            const theaterName = show.theater ? show.theater.name : 'Ukendt teater';
-            const key = `${movieTitle}-${theaterName}`;
-
-            if (!showsByMovieAndTheater[key]) {
-                showsByMovieAndTheater[key] = {
-                    movieTitle: movieTitle,
-                    theaterName: theaterName,
-                    shows: []
-                };
-            }
-            showsByMovieAndTheater[key].shows.push(show);
-        });
-
-        let html = '';
-        Object.values(showsByMovieAndTheater).forEach(({ movieTitle, theaterName, shows }) => {
-            html += `<div class="movie-day">`;
-            html += `<div class="movie-title" title="${movieTitle}">${movieTitle}</div>`;
-            html += `<div class="theater-name">${theaterName}</div>`;
-
-            const showsByTime = {};
-            shows.forEach(show => {
-                const time = new Date(show.showTime).toLocaleTimeString('da-DK', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                if (!showsByTime[time]) {
-                    showsByTime[time] = [];
-                }
-                showsByTime[time].push(show);
-            });
-
-            Object.keys(showsByTime).forEach(time => {
-                const showsAtTime = showsByTime[time];
-                const show = showsAtTime[0];
-
-                html += `
-                    <div class="show-time" onclick="window.calendarHandlers.openShowDetails(${show.id})" 
-                         title="${movieTitle} - ${time} - ${theaterName}">
-                        ${time}
-                    </div>
-                `;
-            });
-
-            html += `</div>`;
-        });
-
-        return html;
     }
 }

@@ -164,6 +164,10 @@ export class ScheduleManager {
         });
     }
 
+    // Ved oprettelsen af vagt, bruger vi først innerhtml til at oprette en tom formular
+    // Når formularen er udfyldt bruges shiftData til at holde på de værdier der er blevet indskrevet
+    // shiftData bliver omdannet til JSON vha. stringify, så backend kan parse det tilbage til et objekt
+    // på den måde kan en backend klasserne bruges til at gemme den nyoprettede vagt i databasen
     async openShiftForm(shift = null, date = null) {
         const isEdit = shift !== null;
 

@@ -39,6 +39,8 @@ export class ModalManager {
             }
         }
 
+
+        // Fortæller modalen at hvis der bliver tykket ude for boksen eller hvis man trykker "Escape", så skal den lukkes.
         const delegatedHandler = (e) => {
             const t = e.target;
             if (!t) return;
@@ -56,6 +58,65 @@ export class ModalManager {
     }
 
     static openModal(type) {
+        if (type === "customer") {
+            this.openCustomerModal();
+        } else if (type === "staff") {
+            this.openStaffModal();
+        }
+    }
+
+    static async openStaffModal() {
+        const modalHTML = `
+            <div class="modal-overlay" id="modal-overlay"></div>
+            <div class="modal-box" id="modal-box">
+                <button class="modal-close" id="modal-close">&times;</button>
+                <div id="modal-content">
+                    <h2 style="text-align: center;">Medarbejder Login</h2>
+                    <form id="staff-login-form">
+                        <input type="text" name="username" placeholder="Brugernavn" required>
+                        <input type="password" name="password" placeholder="Adgangskode" required>
+                        <button type="submit">Login som medarbejder</button>
+                    </form>
+                    <div id="staff-login-error" style="color: red; margin-top: 1rem;"></div>
+                </div>
+            </div>
+        `;
+
+        this.showModal(modalHTML);
+
+        document.getElementById("staff-login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                username: form.username.value,
+                password: form.password.value
+            };
+
+            try {
+                const res = await fetch("/api/staff/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    const staff = await res.json();
+                    document.getElementById("staff-login-error").textContent = "";
+                    try { localStorage.setItem('loggedInStaff', JSON.stringify(staff)); } catch(e) {}
+                    this.closeModal();
+                    window.dispatchEvent(new Event('user-login-changed'));
+                    window.location.href = "/staff";
+                } else {
+                    document.getElementById("staff-login-error").textContent = "Forkert brugernavn eller adgangskode.";
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById("staff-login-error").textContent = "Fejl ved login. Prøv igen senere.";
+            }
+        });
+    }
+
+    static openCustomerModal() {
         const modalHTML = `
             <div class="modal-overlay" id="modal-overlay"></div>
             <div class="modal-box" id="modal-box">

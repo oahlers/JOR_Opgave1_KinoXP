@@ -21,20 +21,6 @@ function formatDateTime(dtStr) {
     }
 }
 
-function formatDate(dtStr) {
-    try {
-        const dt = new Date(dtStr);
-        return dt.toLocaleDateString('da-DK');
-    } catch (e) { return dtStr; }
-}
-
-function formatTime(dtStr) {
-    try {
-        const dt = new Date(dtStr);
-        return dt.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
-    } catch (e) { return dtStr; }
-}
-
 function renderBookings(bookings) {
     const list = document.getElementById('bookings-list');
     const empty = document.getElementById('empty-state');
@@ -48,8 +34,7 @@ function renderBookings(bookings) {
 
     bookings.forEach(b => {
         const movieTitle = b.show?.movie?.title ?? `Film #${b.show?.movieId ?? ''}`;
-        const dateStr = b.show?.showTime ? formatDate(b.show.showTime) : '';
-        const timeStr = b.show?.showTime ? formatTime(b.show.showTime) : '';
+        const dateStr = b.show?.showTime ? formatDateTime(b.show.showTime) : '';
         const theaterName = b.show?.theater?.name ?? 'Ukendt teater';
         const item = document.createElement('div');
         item.className = 'card';
@@ -59,8 +44,7 @@ function renderBookings(bookings) {
             ${imgHtml}
             <h3>${movieTitle}</h3>
             <p><strong>Teatersal:</strong> ${theaterName}</p>
-            <p><strong>Dato:</strong> ${dateStr}</p>
-            <p><strong>Tid:</strong> ${timeStr}</p>
+            <p><strong>Dato og tid:</strong> ${dateStr}</p>
             <p><strong>Pladser:</strong> ${b.seats}</p>
             <div style="margin-top: 0.5rem; display:flex; gap:0.5rem; flex-wrap: wrap;">
                 <button data-action="ticket" data-id="${b.id}">Vis billet</button>

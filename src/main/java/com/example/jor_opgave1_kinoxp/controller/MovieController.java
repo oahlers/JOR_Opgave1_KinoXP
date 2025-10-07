@@ -30,6 +30,9 @@ public class MovieController {
         return movieService.getMovieById(id);
     }
 
+    // Opretter en ny film med exception handling der skelner mellem bookingkonflikter og andre fejl
+    // Hvis der kommer en generel runtime fejl, som fx fejl i databasen, udskrive "Fejl ved gemning af film"
+    // Hvis den dog fanger en confliktsfejl, udskrives "Teatret er allerede booket"
     @PostMapping
     public ResponseEntity<?> createMovie(@RequestBody Movie movie) {
         try {
