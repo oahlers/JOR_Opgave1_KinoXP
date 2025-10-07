@@ -422,7 +422,7 @@ class CalendarPage {
                     const res = await fetch('/api/bookings', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ showId: showId, customerName: user.fullName, seats })
+                        body: JSON.stringify({ showId: showId, seats, userId: user.id })
                     });
 
                     if (!res.ok) throw new Error('Booking fejlede');

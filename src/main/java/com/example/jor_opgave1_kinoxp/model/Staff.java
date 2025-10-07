@@ -22,11 +22,12 @@ public class Staff {
     private String position;
     private Double totalHours = 0.0;
 
+    // En-til-mange relation med vagter - én medarbejder kan have mange vagter
+    // @JsonIgnore forhindrer uendelige loops når Staff konverteres til JSON
     @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore // Tilføj denne annotation for at undgå cirkulær reference
+    @JsonIgnore
     private List<Shift> shifts = new ArrayList<>();
 
-    // Getters og setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

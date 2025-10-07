@@ -64,7 +64,6 @@ DROP TABLE IF EXISTS bookings;
 CREATE TABLE bookings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     show_id INT,
-    customer_name VARCHAR(100),
     seats INT,
     booking_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT NULL,
@@ -72,8 +71,8 @@ CREATE TABLE bookings (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-INSERT INTO bookings (show_id, customer_name, seats, user_id) VALUES
-(1, 'Test Kunde', 2, 1);
+INSERT INTO bookings (show_id, seats, user_id) VALUES
+(1, 2, 1);
 
 DROP TABLE IF EXISTS staff;
 CREATE TABLE staff (

@@ -7,6 +7,10 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "movie")
+
+// Forhindrer JSON-serialiseringsfejl når Spring automatisk konverterer Java-objekter til JSON
+// Spring prøver at inkludere ALT data, men nogle Hibernate-ting kan ikke konverteres til JSON
+// Ved at bruge dette prøver vi at "skippe" Hibernate-felterne så kun rigtige datafelter som title, category osv. bliver serialiseret
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Movie {
     @Id

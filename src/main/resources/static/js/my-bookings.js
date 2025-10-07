@@ -6,8 +6,8 @@ function getLoggedInUser() {
     return u ? JSON.parse(u) : null;
 }
 
-async function fetchMyBookings(fullName) {
-    const res = await fetch(`/api/bookings/by-customer?name=${encodeURIComponent(fullName)}`);
+async function fetchMyBookingsByUser(userId) {
+    const res = await fetch(`/api/bookings/by-user?userId=${encodeURIComponent(userId)}`);
     if (!res.ok) throw new Error('Kunne ikke hente bookinger');
     return await res.json();
 }
@@ -19,20 +19,6 @@ function formatDateTime(dtStr) {
     } catch (e) {
         return dtStr;
     }
-}
-
-function formatDate(dtStr) {
-    try {
-        const dt = new Date(dtStr);
-        return dt.toLocaleDateString('da-DK');
-    } catch (e) { return dtStr; }
-}
-
-function formatTime(dtStr) {
-    try {
-        const dt = new Date(dtStr);
-        return dt.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
-    } catch (e) { return dtStr; }
 }
 
 function renderBookings(bookings) {
@@ -48,8 +34,7 @@ function renderBookings(bookings) {
 
     bookings.forEach(b => {
         const movieTitle = b.show?.movie?.title ?? `Film #${b.show?.movieId ?? ''}`;
-        const dateStr = b.show?.showTime ? formatDate(b.show.showTime) : '';
-        const timeStr = b.show?.showTime ? formatTime(b.show.showTime) : '';
+        const dateStr = b.show?.showTime ? formatDateTime(b.show.showTime) : '';
         const theaterName = b.show?.theater?.name ?? 'Ukendt teater';
         const item = document.createElement('div');
         item.className = 'card';
@@ -59,8 +44,7 @@ function renderBookings(bookings) {
             ${imgHtml}
             <h3>${movieTitle}</h3>
             <p><strong>Teatersal:</strong> ${theaterName}</p>
-            <p><strong>Dato:</strong> ${dateStr}</p>
-            <p><strong>Tid:</strong> ${timeStr}</p>
+            <p><strong>Dato og tid:</strong> ${dateStr}</p>
             <p><strong>Pladser:</strong> ${b.seats}</p>
             <div style="margin-top: 0.5rem; display:flex; gap:0.5rem; flex-wrap: wrap;">
                 <button data-action="ticket" data-id="${b.id}">Vis billet</button>
@@ -102,7 +86,7 @@ function openTicketPrint(booking) {
     const movieTitle = booking.show?.movie?.title ?? `Film #${booking.show?.movieId ?? ''}`;
     const showTime = booking.show?.showTime ? formatDateTime(booking.show.showTime) : '';
     const seats = booking.seats || 1;
-    const fullName = booking.customerName || user?.fullName || '';
+    const fullName = (booking.user && booking.user.fullName) ? booking.user.fullName : (user?.fullName || '');
 
     const dataStr = `${window.location.origin}/calendar | ${movieTitle} | ${showTime} | ${fullName} | ${seats} billetter`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(dataStr)}`;
@@ -229,7 +213,7 @@ async function loadAndRender() {
         window.location.href = '/';
         return;
     }
-    const bookings = await fetchMyBookings(user.fullName);
+    const bookings = await fetchMyBookingsByUser(user.id);
     currentBookings = bookings;
     const q = document.getElementById('search-input').value.toLowerCase();
     const filtered = q ? bookings.filter(b => {

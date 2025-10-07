@@ -13,8 +13,6 @@ public class Booking {
     @ManyToOne
     private Show show;
 
-    private String customerName;
-
     private int seats;
     private LocalDateTime bookingTime = LocalDateTime.now();
 
@@ -36,14 +34,6 @@ public class Booking {
 
     public void setShow(Show show) {
         this.show = show;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 
     public int getSeats() {

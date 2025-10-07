@@ -33,6 +33,10 @@ export class MovieManager {
         });
     }
 
+    // Når vi opretter en film, bruger vi først innerhtml til at oprette en tom formular
+    // Når formularen er udfyldt bruges movieData til at holde på de værdier der er blevet indskrevet
+    // moviedata bliver omdannet til JSON vha. stringify, så backend kan parse det tilbage til et objekt
+    // på den måde kan en backend klasserne bruges til at gemme den nyoprettede film i databasen
     static async openMovieForm(movie = null) {
         const isEdit = movie !== null;
 

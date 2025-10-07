@@ -1,5 +1,8 @@
 import { ModalManager } from './modal.js';
 export class AuthManager {
+
+    // Tjekker login-status og opdaterer UI dynamisk - håndterer både brugere og medarbejdere
+    // Skifter mellem login-knapper og velkomst-besked baseret på hvem der er logget ind, vha. queryselector og innerhtml.
     static checkLoginStatus() {
         const loggedInUser = localStorage.getItem('loggedInUser');
         const loggedInStaff = localStorage.getItem('loggedInStaff');
@@ -66,6 +69,7 @@ export class AuthManager {
         }
     }
 
+    // Initializér login knapperne - både kunde og staff henter nu fra ModalManager
     static setupLoginButtons() {
         const customerBtn = document.getElementById("customer-login-btn");
         const staffBtn = document.getElementById("staff-login-btn");
@@ -80,59 +84,8 @@ export class AuthManager {
 
         if (staffBtn) {
             staffBtn.addEventListener("click", () => {
-                AuthManager.openStaffModal();
+                ModalManager.openModal("staff");
             });
         }
-    }
-
-    static async openStaffModal() {
-        const modalHTML = `
-            <div class="modal-overlay" id="modal-overlay"></div>
-            <div class="modal-box" id="modal-box">
-                <button class="modal-close" id="modal-close">&times;</button>
-                <div id="modal-content">
-                    <h2 style="text-align: center;">Medarbejder Login</h2>
-                    <form id="staff-login-form">
-                        <input type="text" name="username" placeholder="Brugernavn" required>
-                        <input type="password" name="password" placeholder="Adgangskode" required>
-                        <button type="submit">Login som medarbejder</button>
-                    </form>
-                    <div id="staff-login-error" style="color: red; margin-top: 1rem;"></div>
-                </div>
-            </div>
-        `;
-
-        ModalManager.showModal(modalHTML);
-
-        document.getElementById("staff-login-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const data = {
-                username: form.username.value,
-                password: form.password.value
-            };
-
-            try {
-                const res = await fetch("/api/staff/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                });
-
-                if (res.ok) {
-                    const staff = await res.json();
-                    document.getElementById("staff-login-error").textContent = "";
-                    try { localStorage.setItem('loggedInStaff', JSON.stringify(staff)); } catch(e) {}
-                    ModalManager.closeModal();
-                    window.dispatchEvent(new Event('user-login-changed'));
-                    window.location.href = "/staff";
-                } else {
-                    document.getElementById("staff-login-error").textContent = "Forkert brugernavn eller adgangskode.";
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                document.getElementById("staff-login-error").textContent = "Fejl ved login. Prøv igen senere.";
-            }
-        });
     }
 }
