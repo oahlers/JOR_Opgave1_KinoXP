@@ -69,7 +69,6 @@ export class AuthManager {
         }
     }
 
-    // Initializér login knapperne - både kunde og staff henter nu fra ModalManager
     static setupLoginButtons() {
         const customerBtn = document.getElementById("customer-login-btn");
         const staffBtn = document.getElementById("staff-login-btn");

@@ -40,7 +40,6 @@ export class ModalManager {
         }
 
 
-        // Fortæller modalen at hvis der bliver tykket ude for boksen eller hvis man trykker "Escape", så skal den lukkes.
         const delegatedHandler = (e) => {
             const t = e.target;
             if (!t) return;
