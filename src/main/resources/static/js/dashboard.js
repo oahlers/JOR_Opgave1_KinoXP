@@ -87,7 +87,7 @@ class DashboardPage {
     async init() {
         AuthManager.setupLoginButtons();
         AuthManager.checkLoginStatus();
-        this.loadMovies();
+        await this.loadMovies();
     }
 
 
