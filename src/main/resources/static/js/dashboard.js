@@ -40,6 +40,11 @@ class DashboardPage {
         }
     }
 
+    // renderFeatured funktionen tjekker først om der eksisterer nogle film i databasen
+    // Hvis der gør, sortere den filmene efter data, vha. sort af hver film.
+    // Hver entry der har været i sort funktionen får hentet deres billede og tilføjet styling
+    // Der bliver derefter tilføjet en click funktionen når man trykker på billedet, som henter openMovieInfo funktionen
+    // Så hvis en af de 5 billeder trykkes, kan informationer om filmen ses, og man kan gå videre til kalenderen for at booke en billet
     renderFeatured(){
         const container = document.getElementById('featured-movies');
         if (!container) return;

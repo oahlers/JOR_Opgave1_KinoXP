@@ -208,36 +208,6 @@ class CalendarPage {
             alert('Kunne ikke åbne tidsvalg.');
         }
     }
-
-    async findShowForTime(movieId, dateStr, hhmm) {
-        const toHM = (d) => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        const sameDate = (d, dStr) => {
-            const ds = this.formatLocalYMD(d);
-            return ds === dStr;
-        };
-        let candidate = this.calendarManager.shows.find(s => {
-            if (s.movieId !== movieId) return false;
-            if (!s.showTime) return false;
-            const dt = new Date(s.showTime);
-            return sameDate(dt, dateStr) && toHM(dt) === hhmm;
-        });
-        if (candidate) return candidate;
-        try {
-            const res = await fetch(`/api/shows/movie/${movieId}`);
-            if (res.ok) {
-                const shows = await res.json();
-                candidate = shows.find(s => {
-                    if (!s.showTime) return false;
-                    const dt = new Date(s.showTime);
-                    const t = toHM(dt);
-                    return this.formatLocalYMD(dt) === dateStr && t === hhmm;
-                });
-                return candidate || null;
-            }
-        } catch (_) {}
-        return null;
-    }
-
     openShowDetails(showId) {
         const show = this.calendarManager.shows.find(s => s.id === showId);
         if (!show) return;
@@ -316,6 +286,12 @@ class CalendarPage {
         ModalManager.showModal(modalHTML);
     }
 
+    // Bookshow tjekker om en bruger er logget ind, og hvis man er, åbner modalen for booking af show
+    // Den fetcher api kald for et specifikt show og henter alle sweets
+    // Når man har valgt antal billetter og tilkøb, beregnes den samlede pris for showet
+    // Man er tvunget til at tjekke af ved at betale kontant ved fremmøde
+    // Når man har bekræftet hentes en qr kode der tager en data string med ens navn, filmens titel osv.
+    // Derefter laves der en innerhtml som vises som pdf på ny side med qr koden samt information om ens billet
     async bookShow(showId) {
         if (!localStorage.getItem('loggedInUser')) {
             alert('Du skal være logget ind for at booke billetter');

@@ -26,6 +26,10 @@ class StaffPage {
         });
     }
 
+    // For staff siden importerer vi vores modules såsom Moviemanager, Staffmanager, Schedulemanager og Sweetsmanager
+    // Hver specifik knap på staff.html siden får deres eget button id, og deres event handler er defineret her.
+    // Ved at trykke på fx. knappen for administrer film aktiveres event handler for at hente og vise alle filmer.
+    // Derefter ved programmet at den skal ind i Moviemanager, og bruge funktionen loadMovies til at hente filmerne fra serveren.
     setupStaffButtons() {
         document.getElementById('manage-movies-btn').addEventListener('click', () => {
             this.toggleSection('movies-section');

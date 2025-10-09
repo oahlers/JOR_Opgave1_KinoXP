@@ -21,6 +21,12 @@ function formatDateTime(dtStr) {
     }
 }
 
+// Når en film skal renderes på "mine bookings" siden" tjekkes der først om listen er tom
+// Hvis ikke oprettes en foreach metode der med en innerhtml viser hver bestilte billets filmnavn, dato og antal pladser
+// Der laves en oneclick funktion der virker ved at man for opstillet tre muligheder ved tryk af en specifik film
+// Ved tryk af en af funktionerne, såsom aktionen reschedule, som ville være "ændre dato" på siden
+// Hentes funktionen openRescheduleModal der viser andre tider for samme film, så man kan vælge en ny dato
+// På den måde har alle ens bookede film de samme funktionaliteter på "mine bookings" siden
 function renderBookings(bookings) {
     const list = document.getElementById('bookings-list');
     const empty = document.getElementById('empty-state');
