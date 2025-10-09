@@ -16,8 +16,7 @@ export class StaffManager {
 
         staff.forEach(staffMember => {
             const staffItem = document.createElement('div');
-            staffItem.className = 'card';
-            staffItem.style.marginBottom = '1rem';
+            staffItem.className = 'content-card';
             staffItem.innerHTML = `
                 <h3>${staffMember.fullName}</h3>
                 <p><strong>Brugernavn:</strong> ${staffMember.username}</p>

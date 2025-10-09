@@ -159,8 +159,7 @@ class DashboardPage {
 
         movies.forEach(movie => {
             const movieCard = document.createElement('div');
-            movieCard.className = 'card';
-            movieCard.style.marginBottom = '1rem';
+            movieCard.className = 'content-card';
 
             const imgHtml = movie.imageUrl 
                 ? `<img src="${movie.imageUrl}" alt="${movie.title}" class="movie-thumb" onerror="this.style.display='none'" onclick="window.dashboardHandlers.openMovieInfo(${movie.id})" style="cursor:pointer;">`

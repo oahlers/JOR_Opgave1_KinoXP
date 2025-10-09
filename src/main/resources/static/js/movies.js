@@ -31,8 +31,7 @@ class MoviesPage {
 
         movies.forEach(movie => {
             const movieCard = document.createElement('div');
-            movieCard.className = 'card';
-            movieCard.style.marginBottom = '1rem';
+            movieCard.className = 'content-card';
 
             let showInfo = '';
             if (movie.firstShowDate && movie.showDays) {

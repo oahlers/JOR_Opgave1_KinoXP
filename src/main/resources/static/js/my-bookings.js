@@ -43,8 +43,7 @@ function renderBookings(bookings) {
         const dateStr = b.show?.showTime ? formatDateTime(b.show.showTime) : '';
         const theaterName = b.show?.theater?.name ?? 'Ukendt teater';
         const item = document.createElement('div');
-        item.className = 'card';
-        item.style.marginBottom = '1rem';
+        item.className = 'content-card';
         const imgHtml = b.show?.movie?.imageUrl ? `<img src="${b.show.movie.imageUrl}" alt="${movieTitle}" class="movie-thumb" onerror="this.style.display='none'">` : '';
         item.innerHTML = `
             ${imgHtml}

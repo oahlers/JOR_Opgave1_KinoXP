@@ -17,8 +17,7 @@ export class SweetsManager {
 
         sweets.forEach(sweet => {
             const item = document.createElement('div');
-            item.className = 'card';
-            item.style.marginBottom = '1rem';
+            item.className = 'content-card';
             item.innerHTML = `
                 <h3>${sweet.name}</h3>
                 <p><strong>Pris:</strong> ${this.formatPrice(sweet.price)}</p>

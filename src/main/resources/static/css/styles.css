@@ -193,6 +193,28 @@ button:disabled {
     text-align: center;
 }
 
+#movies-list, #staff-list, #sweets-list, #bookings-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 200px;
+}
+
+.content-card {
+    background: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    text-align: center;
+    width: 30%;
+    min-width: 250px;
+    max-width: 350px;
+    box-sizing: border-box;
+}
+
 .welcome-card {
     text-align: center;
 }
