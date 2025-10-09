@@ -40,7 +40,7 @@ class DashboardPage {
         }
     }
 
-    // renderFeatured funktionen tjekker først om der eksisterer nogle film i databasen
+    '    // renderFeatured funktionen tjekker først om der eksisterer nogle film i databasen
     // Hvis der gør, sortere den filmene efter data, vha. sort af hver film.
     // Hver entry der har været i sort funktionen får hentet deres billede og tilføjet styling
     // Der bliver derefter tilføjet en click funktionen når man trykker på billedet, som henter openMovieInfo funktionen
@@ -102,7 +102,7 @@ class DashboardPage {
         } catch (error) {
             console.error('Error loading movies:', error);
         }
-    }
+    }'
 
     renderFilters() {
         const container = document.getElementById('movies-overview');
@@ -161,7 +161,7 @@ class DashboardPage {
             const movieCard = document.createElement('div');
             movieCard.className = 'content-card';
 
-            const imgHtml = movie.imageUrl 
+            const imgHtml = movie.imageUrl
                 ? `<img src="${movie.imageUrl}" alt="${movie.title}" class="movie-thumb" onerror="this.style.display='none'" onclick="window.dashboardHandlers.openMovieInfo(${movie.id})" style="cursor:pointer;">`
                 : '';
 
