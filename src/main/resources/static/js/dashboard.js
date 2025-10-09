@@ -83,13 +83,13 @@ class DashboardPage {
             container.appendChild(wrap);
         }
     }
+
     async init() {
-        document.addEventListener("DOMContentLoaded", () => {
-            AuthManager.setupLoginButtons();
-            AuthManager.checkLoginStatus();
-            this.loadMovies();
-        });
+        AuthManager.setupLoginButtons();
+        AuthManager.checkLoginStatus();
+        this.loadMovies();
     }
+
 
     async loadMovies() {
         try {
