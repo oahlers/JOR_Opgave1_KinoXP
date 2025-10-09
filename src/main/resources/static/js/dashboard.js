@@ -40,7 +40,7 @@ class DashboardPage {
         }
     }
 
-    // renderFeatured funktionen tjekker først om der eksisterer nogle film i databasen
+'    // renderFeatured funktionen tjekker først om der eksisterer nogle film i databasen
     // Hvis der gør, sortere den filmene efter data, vha. sort af hver film.
     // Hver entry der har været i sort funktionen får hentet deres billede og tilføjet styling
     // Der bliver derefter tilføjet en click funktionen når man trykker på billedet, som henter openMovieInfo funktionen
@@ -61,31 +61,13 @@ class DashboardPage {
             return 0;
         });
 
-        const sliderWrapper = document.createElement('div');
-        sliderWrapper.style.position = 'relative';
-        sliderWrapper.style.overflow = 'hidden';
-        sliderWrapper.style.width = '100%';
-        sliderWrapper.style.maxWidth = '100%';
-        sliderWrapper.style.margin = '1rem 0';
-
-        const slider = document.createElement('div');
-        slider.style.display = 'flex';
-        slider.style.overflowX = 'auto';
-        slider.style.scrollBehavior = 'smooth';
-        slider.style.gap = '1rem';
-        slider.style.padding = '0.5rem 0';
-
-        for (const entry of moviesWithSortKey) {
+        const topFive = moviesWithSortKey.slice(0,5);
+        for (const entry of topFive) {
             const m = entry.movie;
             const img = document.createElement('img');
             img.className = 'movie-thumb';
             img.alt = m.title || 'Film';
             img.style.cursor = 'pointer';
-            img.style.width = '150px';
-            img.style.height = '220px';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '4px';
-
             if (m.imageUrl) {
                 img.src = m.imageUrl;
                 img.onerror = function(){ this.style.display = 'none'; };
@@ -93,53 +75,14 @@ class DashboardPage {
             img.addEventListener('click', () => this.openMovieInfo(m.id));
             const wrap = document.createElement('div');
             wrap.style.textAlign = 'center';
-            wrap.style.minWidth = '150px';
             wrap.appendChild(img);
             const title = document.createElement('div');
             title.textContent = m.title;
             title.style.marginTop = '0.25rem';
-            title.style.fontSize = '0.9rem';
             wrap.appendChild(title);
-            slider.appendChild(wrap);
+            container.appendChild(wrap);
         }
-
-        const leftBtn = document.createElement('button');
-        const rightBtn = document.createElement('button');
-
-        leftBtn.innerHTML = '◀';
-        rightBtn.innerHTML = '▶';
-
-        [leftBtn, rightBtn].forEach(btn => {
-            btn.style.position = 'absolute';
-            btn.style.top = '50%';
-            btn.style.transform = 'translateY(-50%)';
-            btn.style.background = 'rgba(0,0,0,0.5)';
-            btn.style.color = 'white';
-            btn.style.border = 'none';
-            btn.style.padding = '0.5rem';
-            btn.style.cursor = 'pointer';
-            btn.style.zIndex = '10';
-            btn.style.fontSize = '1.2rem';
-            btn.style.borderRadius = '50%';
-        });
-
-        leftBtn.style.left = '10px';
-        rightBtn.style.right = '10px';
-
-        leftBtn.addEventListener('click', () => {
-            slider.scrollBy({ left: -300, behavior: 'smooth' });
-        });
-
-        rightBtn.addEventListener('click', () => {
-            slider.scrollBy({ left: 300, behavior: 'smooth' });
-        });
-
-        sliderWrapper.appendChild(leftBtn);
-        sliderWrapper.appendChild(rightBtn);
-        sliderWrapper.appendChild(slider);
-        container.appendChild(sliderWrapper);
     }
-
     async init() {
         document.addEventListener("DOMContentLoaded", () => {
             AuthManager.setupLoginButtons();
@@ -159,7 +102,7 @@ class DashboardPage {
         } catch (error) {
             console.error('Error loading movies:', error);
         }
-    }
+    }'
 
     renderFilters() {
         const container = document.getElementById('movies-overview');
